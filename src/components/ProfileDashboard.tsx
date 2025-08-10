@@ -74,13 +74,23 @@ const ProfileDashboard = () => {
                 <span className="hidden sm:inline">•</span>
                 <span>www.linkedin.com/in/ralphbenedict</span>
               </div>
-              <div className="flex items-center space-x-2 mt-3">
+              <div className="flex items-center space-x-2 mt-3"></div>
 
-
+              {/* Mobile actions (stack under profile info) */}
+              <div className="mt-4 grid grid-cols-2 gap-2 md:hidden">
+                <Button variant="outline" size="sm" className="w-full justify-center" onClick={handleShareProfile}>
+                  <Share className="w-4 h-4 mr-2" />
+                  Share Profile
+                </Button>
+                <Button size="sm" className="w-full justify-center" onClick={handleDownloadResume}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Resume
+                </Button>
               </div>
             </div>
           </div>
-          <div className="flex space-x-3">
+          {/* Desktop actions (stay to the right) */}
+          <div className="hidden md:flex space-x-3">
             <Button variant="outline" size="sm" onClick={handleShareProfile}>
               <Share className="w-4 h-4 mr-2" />
               Share Profile

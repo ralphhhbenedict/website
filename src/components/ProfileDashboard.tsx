@@ -70,9 +70,21 @@ const ProfileDashboard = () => {
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>New York City, NY</span>
                 <span className="hidden sm:inline">•</span>
-                <a href="mailto:ralphhhbenedict@gmail.com" className="hover:underline">ralphhhbenedict@gmail.com</a>
+                <a
+                  href="mailto:ralphhhbenedict@gmail.com"
+                  className="text-primary underline underline-offset-2 hover:opacity-90 font-medium"
+                >
+                  ralphhhbenedict@gmail.com
+                </a>
                 <span className="hidden sm:inline">•</span>
-                <a href="https://www.linkedin.com/in/ralphbenedict" target="_blank" rel="noopener noreferrer" className="hover:underline">www.linkedin.com/in/ralphbenedict</a>
+                <a
+                  href="https://www.linkedin.com/in/ralphbenedict"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline underline-offset-2 hover:opacity-90 font-medium break-all"
+                >
+                  www.linkedin.com/in/ralphbenedict
+                </a>
               </div>
               <div className="flex items-center space-x-2 mt-3"></div>
 

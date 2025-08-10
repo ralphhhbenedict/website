@@ -36,8 +36,8 @@ const ProfileDashboard = () => {
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-6">
             <div className="relative group">
-              <Avatar className="h-20 w-20 ring-4 ring-primary/20 cursor-pointer" onClick={triggerFileInput}>
-                <AvatarImage src={profileImage} alt="Ralph Bautista" />
+              <Avatar className="h-24 w-24 ring-4 ring-primary/20 cursor-pointer" onClick={triggerFileInput}>
+                <AvatarImage src={profileImage} alt="Ralph Bautista" className="object-cover object-center" />
                 <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary to-accent text-primary-foreground">RB</AvatarFallback>
               </Avatar>
               <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center" onClick={triggerFileInput}>

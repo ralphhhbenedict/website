@@ -62,10 +62,10 @@ const ProfileDashboard = () => {
               </Avatar>
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">Ralph Bautista</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Ralph Benedict Bautista</h1>
               <div className="text-lg text-muted-foreground">
+                <span className="block"><b>Currently: Consulting with startups</b></span>
                 <span className="block">Previously: Senior Director of Product</span>
-                <span className="block">Currently: Consulting with startups</span>
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>New York City, NY</span>

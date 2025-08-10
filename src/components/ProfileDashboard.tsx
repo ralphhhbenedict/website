@@ -22,11 +22,12 @@ const ProfileDashboard = () => {
     if (navigator.share) {
       try {
         await navigator.share({ title: "Ralph Bautista", url });
-        return;
       } catch {
-        // fallthrough to clipboard on cancel/error
+        // User canceled or share failed; do nothing. Avoid opening modal after native sheet.
       }
+      return;
     }
+    // No native share support: open modal fallback
     setShareOpen(true);
   };
 

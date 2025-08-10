@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar in overflow-x tab list for a cleaner mobile look */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

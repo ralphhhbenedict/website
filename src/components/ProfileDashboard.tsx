@@ -96,7 +96,7 @@ const ProfileDashboard = () => {
 
     <div className="container mx-auto px-4 md:px-6 py-8">
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="w-full bg-muted/50 overflow-x-auto flex gap-2 [&>button]:shrink-0">
+        <TabsList className="w-full bg-muted/50 overflow-x-auto flex gap-2 [&>button]:shrink-0 scrollbar-none">
           <TabsTrigger value="overview" className="data-[state=active]:bg-card">Overview</TabsTrigger>
           <TabsTrigger value="skills" className="data-[state=active]:bg-card">Skills Analysis</TabsTrigger>
           <TabsTrigger value="career" className="data-[state=active]:bg-card">Career Arc</TabsTrigger>

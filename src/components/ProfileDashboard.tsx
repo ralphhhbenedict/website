@@ -5,45 +5,25 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, TrendingUp, FileText, Award, Target, Brain, Database, Code, Users, Download, Share, Star, ArrowRight, CheckCircle, AlertCircle, Lightbulb, Camera } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { type VariantProps } from "class-variance-authority";
-import { useState, useRef } from "react";
 import { FitScoreMatrix } from "./FitScoreMatrix";
 import { SkillsBreakdown } from "./SkillsBreakdown";
 import { CareerTimeline } from "./CareerTimeline";
 import { EvidencePortfolio } from "./EvidencePortfolio";
 const ProfileDashboard = () => {
-  const [profileImage, setProfileImage] = useState<string>("/images/profile.png");
+  const profileImage = "/images/profile.png";
   type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        setProfileImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
     {/* Header */}
     <div className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-6">
-            <div className="relative group">
-              <Avatar className="h-24 w-24 ring-4 ring-primary/20 cursor-pointer" onClick={triggerFileInput}>
+            <div className="relative">
+              <Avatar className="h-24 w-24 ring-4 ring-primary/20">
                 <AvatarImage src={profileImage} alt="Ralph Bautista" className="object-cover object-center" />
                 <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary to-accent text-primary-foreground">RB</AvatarFallback>
               </Avatar>
-              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center" onClick={triggerFileInput}>
-                <Camera className="w-6 h-6 text-white" />
-              </div>
-              <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Ralph Bautista</h1>

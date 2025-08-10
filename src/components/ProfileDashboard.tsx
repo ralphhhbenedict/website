@@ -34,9 +34,9 @@ const ProfileDashboard = () => {
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <span>New York City, NY</span>
                 <span>•</span>
-                <span>rbbautista312@gmail.com</span>
+                <span>ralphhhbenedict@gmail.com</span>
                 <span>•</span>
-                <span>(310) 291-3650</span>
+                <span>www.linkedin.com/in/ralphbenedict</span>
               </div>
               <div className="flex items-center space-x-2 mt-3">
 

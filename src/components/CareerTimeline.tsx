@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Calendar, 
-  TrendingUp, 
-  Award, 
-  Users, 
+import {
+  Calendar,
+  TrendingUp,
+  Award,
+  Users,
   Target,
   Building,
   MapPin
@@ -16,7 +16,7 @@ export const CareerTimeline = () => {
     {
       company: "The Princeton Review",
       role: "Senior Director of Product, AI & Initiative Projects",
-      period: "March 2022 - Present",
+      period: "March 2022 - April 2025",
       location: "New York City, NY",
       type: "Current",
       achievements: [
@@ -90,7 +90,7 @@ export const CareerTimeline = () => {
     },
     {
       name: "The Advanced Web Developer Bootcamp: React/Redux",
-      provider: "Udemy.com", 
+      provider: "Udemy.com",
       year: "2022"
     },
     {
@@ -133,7 +133,7 @@ export const CareerTimeline = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center space-y-2">
               <Award className="w-8 h-8 text-success mx-auto" />
-              <div className="text-2xl font-bold text-success">6.5</div>
+              <div className="text-2xl font-bold text-success">10+</div>
               <div className="text-sm text-muted-foreground">Years Experience</div>
             </div>
             <div className="text-center space-y-2">
@@ -152,12 +152,12 @@ export const CareerTimeline = () => {
               <div className="text-sm text-muted-foreground">Companies</div>
             </div>
           </div>
-          
+
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <h4 className="font-semibold text-primary mb-2">Career Progression Assessment</h4>
             <p className="text-sm text-foreground/80">
-              <strong>Above Average Progression:</strong> Demonstrates strong career trajectory with consistent promotions 
-              and increasing responsibility. Moved from Product Coordinator to Senior Director in 6 years, showing 
+              <strong>Above Average Progression:</strong> Demonstrates strong career trajectory with consistent promotions
+              and increasing responsibility. Moved from Product Coordinator to Senior Director in 6 years, showing
               exceptional growth rate and leadership potential.
             </p>
           </div>
@@ -179,12 +179,12 @@ export const CareerTimeline = () => {
                 {index !== positions.length - 1 && (
                   <div className="absolute left-4 top-16 bottom-0 w-0.5 bg-border"></div>
                 )}
-                
+
                 <div className="flex items-start space-x-4">
                   <div className={`w-8 h-8 rounded-full bg-${getProgressionColor(position.type)} flex items-center justify-center flex-shrink-0 mt-1`}>
                     <div className="w-3 h-3 bg-white rounded-full"></div>
                   </div>
-                  
+
                   <div className="flex-1 space-y-3">
                     <div>
                       <div className="flex items-start justify-between">
@@ -208,7 +208,7 @@ export const CareerTimeline = () => {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="mt-3">
                         <h4 className="font-medium text-sm mb-2">Key Achievements:</h4>
                         <ul className="space-y-1">
@@ -220,7 +220,7 @@ export const CareerTimeline = () => {
                           ))}
                         </ul>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-1 mt-3">
                         {position.skills.map((skill, skillIndex) => (
                           <Badge key={skillIndex} variant="outline" className="text-xs">

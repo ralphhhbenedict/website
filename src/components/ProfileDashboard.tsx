@@ -1,11 +1,14 @@
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { User, TrendingUp, FileText, Award, Target, Brain, Database, Code, Users, Download, Share, Star, ArrowRight, CheckCircle, AlertCircle, Lightbulb, Camera } from "lucide-react";
 import { type VariantProps } from "class-variance-authority";
+import { toast } from "@/components/ui/use-toast";
 import { FitScoreMatrix } from "./FitScoreMatrix";
 import { SkillsBreakdown } from "./SkillsBreakdown";
 import { CareerTimeline } from "./CareerTimeline";
@@ -13,14 +16,46 @@ import { EvidencePortfolio } from "./EvidencePortfolio";
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
   type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
+  const [shareOpen, setShareOpen] = React.useState(false);
+  const handleShareProfile = async () => {
+    const url = window.location.origin;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Ralph Bautista", url });
+        return;
+      } catch {
+        // fallthrough to clipboard on cancel/error
+      }
+    }
+    setShareOpen(true);
+  };
+
+  const handleDownloadResume = async () => {
+    const resumeUrl = "/resume.pdf";
+    try {
+      const response = await fetch(resumeUrl, { method: "HEAD" });
+      if (response.ok) {
+        const anchor = document.createElement("a");
+        anchor.href = resumeUrl;
+        anchor.download = "Ralph_Bautista_Resume.pdf";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      } else {
+        toast({ title: "Resume not found", description: "Add resume.pdf to the public/ folder." });
+      }
+    } catch {
+      toast({ title: "Resume not found", description: "Add resume.pdf to the public/ folder." });
+    }
+  };
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
     {/* Header */}
     <div className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-6">
+      <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-0">
+          <div className="flex items-start gap-4 md:gap-6">
             <div className="relative">
-              <Avatar className="h-24 w-24 ring-4 ring-primary/20">
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 ring-4 ring-primary/20">
                 <AvatarImage src={profileImage} alt="Ralph Bautista" className="object-cover object-center" />
                 <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary to-accent text-primary-foreground">RB</AvatarFallback>
               </Avatar>
@@ -31,11 +66,11 @@ const ProfileDashboard = () => {
                 <span className="block">Previously: Senior Director of Product</span>
                 <span className="block">Currently: Consulting with startups</span>
               </div>
-              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>New York City, NY</span>
-                <span>•</span>
+                <span className="hidden sm:inline">•</span>
                 <span>ralphhhbenedict@gmail.com</span>
-                <span>•</span>
+                <span className="hidden sm:inline">•</span>
                 <span>www.linkedin.com/in/ralphbenedict</span>
               </div>
               <div className="flex items-center space-x-2 mt-3">
@@ -45,11 +80,11 @@ const ProfileDashboard = () => {
             </div>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleShareProfile}>
               <Share className="w-4 h-4 mr-2" />
               Share Profile
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={handleDownloadResume}>
               <Download className="w-4 h-4 mr-2" />
               Download Resume
             </Button>
@@ -58,9 +93,9 @@ const ProfileDashboard = () => {
       </div>
     </div>
 
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 md:px-6 py-8">
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5 bg-muted/50">
+        <TabsList className="w-full bg-muted/50 overflow-x-auto flex gap-2 [&>button]:shrink-0">
           <TabsTrigger value="overview" className="data-[state=active]:bg-card">Overview</TabsTrigger>
           <TabsTrigger value="skills" className="data-[state=active]:bg-card">Skills Analysis</TabsTrigger>
           <TabsTrigger value="career" className="data-[state=active]:bg-card">Career Arc</TabsTrigger>
@@ -307,6 +342,40 @@ const ProfileDashboard = () => {
         </TabsContent>
       </Tabs>
     </div>
+
+    {/* Share Modal for desktop */}
+    <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share profile</DialogTitle>
+          <DialogDescription>Share or copy the link to this profile.</DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          <Button variant="outline" onClick={() => {
+            const url = window.location.origin;
+            const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+            window.open(shareUrl, "_blank", "noopener,noreferrer");
+          }}>LinkedIn</Button>
+          <Button variant="outline" onClick={() => {
+            const url = window.location.origin;
+            const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("Check out Ralph Bautista")}`;
+            window.open(shareUrl, "_blank", "noopener,noreferrer");
+          }}>X (Twitter)</Button>
+          <Button variant="outline" onClick={async () => {
+            const url = window.location.origin;
+            try { await navigator.clipboard.writeText(url); toast({ title: "Link copied", description: url }); } catch { toast({ title: "Unable to copy", description: url }); }
+          }}>Copy link</Button>
+          <Button variant="outline" onClick={() => {
+            const url = window.location.origin;
+            const mailto = `mailto:?subject=${encodeURIComponent("Ralph Bautista Profile")}&body=${encodeURIComponent(url)}`;
+            window.location.href = mailto;
+          }}>Email</Button>
+        </div>
+        <DialogFooter>
+          <Button variant="secondary" onClick={() => setShareOpen(false)}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>;
 };
 export default ProfileDashboard;

@@ -13,6 +13,7 @@ import { FitScoreMatrix } from "./FitScoreMatrix";
 import { SkillsBreakdown } from "./SkillsBreakdown";
 import { CareerTimeline } from "./CareerTimeline";
 import { EvidencePortfolio } from "./EvidencePortfolio";
+import Waitlist from "./Waitlist";
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
   type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
@@ -115,6 +116,9 @@ const ProfileDashboard = () => {
         </div>
       </div>
     </div>
+
+    {/* Waitlist CTA Section */}
+    <Waitlist />
 
     <div className="container mx-auto px-4 md:px-6 py-8">
       <Tabs defaultValue="overview" className="space-y-8">

@@ -96,7 +96,7 @@ const Waitlist = () => {
               7 hats I've worn. <span className="text-primary font-semibold">$540K-$912K</span> if you hired separately.
             </div>
             <div className="text-slate-500 mt-2">
-              1-3 clients at $50K/month. Limited availability.
+              1-3 clients per quarter. Limited availability.
             </div>
           </div>
 

@@ -66,7 +66,7 @@ const Waitlist = () => {
               Now Accepting Clients
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-              The Swiss Army Knife You Need
+              The Swiss Army Knife<br />Your Company Needs
             </h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               8+ years as a PM. From IC to Senior Director to Founder/CEO.

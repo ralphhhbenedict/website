@@ -41,13 +41,22 @@ const ProfileDashboard = () => {
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Ralph Benedict Bautista</h1>
               <div className="text-lg text-muted-foreground">
-                <span className="block"><b>Currently: Consulting with startups</b></span>
+                <span className="flex items-center gap-3 flex-wrap">
+                  <b>Currently: Building 2 Startups</b>
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-gray-200 rounded-full text-xs">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                    </span>
+                    <span className="text-gray-600">Accepting 1 more client</span>
+                  </span>
+                </span>
                 <span className="block">Previously: Senior Director of Product</span>
               </div>
               <div className="text-sm text-muted-foreground">
                 NYC | LA | SF | MNL
               </div>
-              <div className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mt-2">
                 <a
                   href="mailto:ralphhhbenedict@gmail.com"
                   className="text-primary underline underline-offset-2 hover:opacity-90 font-medium"

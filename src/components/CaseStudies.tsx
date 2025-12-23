@@ -75,7 +75,7 @@ const caseStudies = [
     company: "The Princeton Review",
     industry: "EdTech",
     duration: "4 years",
-    role: "PM → Director → Senior Director",
+    role: "Product Manager → Director → Senior Director",
     subtitle: "Career Growth",
     icon: GraduationCap,
     color: "warning",

@@ -24,6 +24,8 @@ const Waitlist = () => {
 
       if (error) {
         if (error.code === "23505") {
+          // Still save email for form prefill even if duplicate
+          localStorage.setItem("ralphhhbenedict_email", email);
           toast({
             title: "Already on the list",
             description: "You're already signed up. I'll be in touch soon.",
@@ -32,6 +34,8 @@ const Waitlist = () => {
           throw error;
         }
       } else {
+        // Save email to localStorage for prefilling other forms
+        localStorage.setItem("ralphhhbenedict_email", email);
         setSubmitted(true);
         toast({
           title: "You're on the list",

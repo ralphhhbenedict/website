@@ -1,5 +1,22 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Target,
   Database,
@@ -8,7 +25,21 @@ import {
   FileText,
   Users,
   Rocket,
+  Eye,
+  CheckCircle2,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/use-toast";
+
+const serviceOptions = [
+  { value: "ai-ops", label: "AI Operations & Agent Swarms" },
+  { value: "fractional-cpo", label: "Fractional CPO / Product Leadership" },
+  { value: "series-a-prep", label: "Series A / Fundraise Prep" },
+  { value: "technical-pm", label: "Technical PM Work" },
+  { value: "product-strategy", label: "Product Strategy & Roadmapping" },
+  { value: "data-analytics", label: "Data & Analytics" },
+  { value: "just-browsing", label: "Just exploring / Not sure yet" },
+];
 
 const hats = [
   {
@@ -22,6 +53,24 @@ const hats = [
       "100+ user interviews",
     ],
     marketRate: "$90K-$150K",
+    // Portfolio items with descriptions
+    portfolioItems: [
+      {
+        label: "E2E Product Artifact",
+        embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/design/mB1trxPIqaiTxEhF8zlY1N/Portfolio?node-id=157-179539",
+        type: "figma",
+      },
+      {
+        label: "18-Month Platform Overhaul",
+        embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/board/kMYjjnxIcGmplWQLAuuHp3/Guarantee-Automation-Final-Workflow?node-id=0-1",
+        type: "figjam",
+      },
+      {
+        label: "19-Page Technical PRD",
+        embedUrl: "/portfolio/Guarantee_Automation_PRD.pdf#toolbar=0&navpanes=0&scrollbar=0",
+        type: "pdf",
+      },
+    ],
   },
   {
     title: "Data Analyst",
@@ -98,6 +147,72 @@ export const SevenHats = () => {
   const regularHats = hats.filter((h) => !h.featured);
   const featuredHat = hats.find((h) => h.featured);
 
+  // Modal state
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [selectedHat, setSelectedHat] = useState<typeof hats[0] | null>(null);
+  const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<{
+    label: string;
+    embedUrl: string;
+    type: string;
+  } | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    company: "",
+    serviceInterest: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; type: string }) => {
+    setSelectedHat(hat);
+    setSelectedPortfolioItem(portfolioItem);
+    setShowForm(false);
+    setSubmitted(false);
+    // Prefill email from localStorage
+    const savedEmail = localStorage.getItem("ralphhhbenedict_email");
+    if (savedEmail) {
+      setFormData((prev) => ({ ...prev, email: savedEmail }));
+    }
+    setPreviewOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.fullName || !formData.email) return;
+
+    setLoading(true);
+    try {
+      await supabase.from("pdf_requests").insert([
+        {
+          full_name: formData.fullName,
+          email: formData.email,
+          company: formData.company,
+          service_interest: formData.serviceInterest,
+          case_studies: [selectedHat?.title || "Portfolio"],
+          source: "7hats-preview",
+        },
+      ]);
+
+      localStorage.setItem("ralphhhbenedict_email", formData.email);
+      setSubmitted(true);
+      toast({
+        title: "Request received!",
+        description: "I'll send the portfolio PDF to your email soon.",
+      });
+    } catch (err) {
+      console.error("Form submission error:", err);
+      setSubmitted(true);
+      toast({
+        title: "Request received!",
+        description: "I'll send the portfolio PDF to your email soon.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* 6 hats grid */}
@@ -140,6 +255,27 @@ export const SevenHats = () => {
                     {hat.marketRate}
                   </Badge>
                 </div>
+                {/* Portfolio items with description + View button */}
+                {hat.portfolioItems && hat.portfolioItems.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {hat.portfolioItems.map((item, i) => (
+                      <div key={i} className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-muted-foreground truncate">
+                          {item.label}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-primary hover:text-primary/80 shrink-0 h-7 px-2"
+                          onClick={() => openPreview(hat, item)}
+                        >
+                          <Eye className="w-3 h-3 mr-1" />
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -195,6 +331,159 @@ export const SevenHats = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Portfolio Preview Modal */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent
+          className="max-w-6xl w-[95vw] h-[90vh] flex flex-col p-0"
+          onContextMenu={(e) => e.preventDefault()} // Disable right-click
+        >
+          <DialogHeader className="p-4 pb-2 border-b shrink-0">
+            <DialogTitle className="flex items-center justify-between">
+              <span>{selectedPortfolioItem?.label || selectedHat?.title}</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          {!showForm ? (
+            <>
+              {/* Figma/FigJam/PDF Embed - fills available space */}
+              <div
+                className="flex-1 relative bg-gray-100 overflow-hidden"
+                style={{
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
+                  touchAction: selectedPortfolioItem?.type === "pdf" ? "auto" : "none",
+                }}
+                onWheel={(e) => {
+                  // Block scroll wheel zoom for Figma (Cmd+scroll or pinch)
+                  // Allow for PDFs so users can scroll
+                  if (selectedPortfolioItem?.type !== "pdf" && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                {selectedPortfolioItem && (
+                  <iframe
+                    src={selectedPortfolioItem.embedUrl}
+                    className="absolute inset-0 w-full h-full border-0"
+                    allowFullScreen
+                    style={{
+                      // PDFs need pointer events to scroll, Figma disabled to prevent zoom
+                      pointerEvents: selectedPortfolioItem.type === "pdf" ? "auto" : "none",
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Bottom bar with Request PDF button */}
+              <div className="p-4 border-t bg-background shrink-0 flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {selectedPortfolioItem?.type === "pdf"
+                    ? "Full PRD document. Request access for editable version."
+                    : "Preview only. Request PDF for full details."}
+                </p>
+                <Button onClick={() => setShowForm(true)}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  {selectedPortfolioItem?.type === "pdf" ? "Request Access" : "Request PDF"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            /* Request PDF Form */
+            <div className="flex-1 overflow-auto p-6">
+              {!submitted ? (
+                <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      placeholder="John Smith"
+                      value={formData.fullName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fullName: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@company.com"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Company</Label>
+                    <Input
+                      id="company"
+                      placeholder="Acme Inc."
+                      value={formData.company}
+                      onChange={(e) =>
+                        setFormData({ ...formData, company: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceInterest">What are you looking for help with?</Label>
+                    <Select
+                      value={formData.serviceInterest}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, serviceInterest: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a service area..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serviceOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowForm(false)}
+                    >
+                      Back to Preview
+                    </Button>
+                    <Button type="submit" disabled={loading} className="flex-1">
+                      {loading ? "Sending..." : (selectedPortfolioItem?.type === "pdf" ? "Request Access" : "Request PDF")}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="text-center py-12 space-y-4">
+                  <CheckCircle2 className="w-16 h-16 text-success mx-auto" />
+                  <p className="text-xl font-medium">Request received!</p>
+                  <p className="text-muted-foreground">
+                    {selectedPortfolioItem?.type === "pdf"
+                      ? `I'll send you access details at ${formData.email} soon.`
+                      : `I'll send the portfolio PDF to ${formData.email} soon.`}
+                  </p>
+                  <Button variant="outline" onClick={() => setPreviewOpen(false)}>
+                    Close
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

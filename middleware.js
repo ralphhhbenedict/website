@@ -1,6 +1,9 @@
 // Vercel Edge Middleware for basic auth on Storybook
-const STORYBOOK_USER = 'ralph';
-const STORYBOOK_PASS = 'storybook2024';
+const AUTHORIZED_USERS = [
+  { username: 'ralph', password: 'storybook2024' },
+  { username: 'kat', password: 'fernandez' },
+  { username: 'kelbz', password: 'itaewon' },
+];
 
 export default function middleware(request) {
   const url = new URL(request.url);
@@ -28,7 +31,11 @@ export default function middleware(request) {
       const decoded = atob(encoded);
       const [user, pass] = decoded.split(':');
 
-      if (user !== STORYBOOK_USER || pass !== STORYBOOK_PASS) {
+      const isAuthorized = AUTHORIZED_USERS.some(
+        (u) => u.username === user && u.password === pass
+      );
+
+      if (!isAuthorized) {
         return new Response('Invalid credentials', {
           status: 401,
           headers: {

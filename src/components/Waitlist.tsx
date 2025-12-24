@@ -6,17 +6,28 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ArrowRight, Zap, Target, Users, Brain } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
+import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError } from "@/lib/mixpanel";
 
 const Waitlist = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [formStarted, setFormStarted] = useState(false);
+
+  const handleFocus = () => {
+    if (!formStarted) {
+      trackFormStarted("waitlist");
+      setFormStarted(true);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setLoading(true);
+    trackFormSubmitted("waitlist", { email_domain: email.split("@")[1] });
+
     try {
       const { error } = await supabase
         .from("waitlist")
@@ -26,6 +37,7 @@ const Waitlist = () => {
         if (error.code === "23505") {
           // Still save email for form prefill even if duplicate
           localStorage.setItem("ralphhhbenedict_email", email);
+          trackFormSuccess("waitlist"); // Already on list = success
           toast({
             title: "Already on the list",
             description: "You're already signed up. I'll be in touch soon.",
@@ -37,12 +49,14 @@ const Waitlist = () => {
         // Save email to localStorage for prefilling other forms
         localStorage.setItem("ralphhhbenedict_email", email);
         setSubmitted(true);
+        trackFormSuccess("waitlist");
         toast({
           title: "You're on the list",
           description: "I'll reach out when I have availability.",
         });
       }
     } catch (err) {
+      trackFormError("waitlist", "submission_failed");
       toast({
         title: "Something went wrong",
         description: "Please try again or email me directly.",
@@ -113,6 +127,7 @@ const Waitlist = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={handleFocus}
                   required
                   className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
                 />

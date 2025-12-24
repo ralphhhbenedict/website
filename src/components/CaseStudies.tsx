@@ -22,6 +22,7 @@ import {
 import { Building2, Rocket, GraduationCap, Clock, DollarSign, CheckCircle2, FileText } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
+import { trackModalOpened, trackFormStarted, trackCaseStudyRequested, trackFormSuccess, trackFormError, trackCTAClick } from "@/lib/mixpanel";
 
 const serviceOptions = [
   { value: "ai-ops", label: "AI Operations & Agent Swarms", description: "Automate workflows with AI agents" },
@@ -112,6 +113,8 @@ export const CaseStudies = () => {
       setFormData((prev) => ({ ...prev, email: savedEmail }));
     }
     setModalOpen(true);
+    trackModalOpened("case_study_request", { initial_case_study: companyName });
+    trackFormStarted("case_study_request");
   };
 
   const toggleStudy = (companyName: string) => {
@@ -127,6 +130,8 @@ export const CaseStudies = () => {
     if (!formData.fullName || !formData.email || selectedStudies.length === 0) return;
 
     setLoading(true);
+    trackCaseStudyRequested(selectedStudies, formData.serviceInterest);
+
     try {
       const { error } = await supabase.from("pdf_requests").insert([
         {
@@ -147,12 +152,14 @@ export const CaseStudies = () => {
       // Always show success and save email (form data captured either way)
       localStorage.setItem("ralphhhbenedict_email", formData.email);
       setSubmitted(true);
+      trackFormSuccess("case_study_request");
       toast({
         title: "Request received!",
         description: "I'll send the case studies to your email soon.",
       });
     } catch (err) {
       console.error("Form submission error:", err);
+      trackFormError("case_study_request", "submission_failed");
       // Still show success to user - we have their info in the logs
       localStorage.setItem("ralphhhbenedict_email", formData.email);
       setSubmitted(true);
@@ -222,7 +229,10 @@ export const CaseStudies = () => {
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_0_0_rgba(var(--primary),0.7)] hover:shadow-lg transition-all duration-300 animate-[glow_2s_ease-in-out_infinite] hover:animate-none"
-                onClick={() => openModal(study.company)}
+                onClick={() => {
+                  trackCTAClick("request_pdf", "Request PDF", study.company);
+                  openModal(study.company);
+                }}
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Request PDF

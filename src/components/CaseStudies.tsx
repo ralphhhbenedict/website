@@ -95,6 +95,7 @@ const caseStudies = [
 export const CaseStudies = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedStudies, setSelectedStudies] = useState<string[]>([]);
+  const [initialCaseStudy, setInitialCaseStudy] = useState<string>("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -106,6 +107,7 @@ export const CaseStudies = () => {
 
   const openModal = (companyName: string) => {
     setSelectedStudies([companyName]);
+    setInitialCaseStudy(companyName);
     setSubmitted(false);
     // Prefill email from localStorage if available
     const savedEmail = localStorage.getItem("ralphhhbenedict_email");
@@ -130,7 +132,7 @@ export const CaseStudies = () => {
     if (!formData.fullName || !formData.email || selectedStudies.length === 0) return;
 
     setLoading(true);
-    trackCaseStudyRequested(selectedStudies, formData.serviceInterest);
+    trackCaseStudyRequested(selectedStudies, formData.serviceInterest, initialCaseStudy);
 
     try {
       const { error } = await supabase.from("pdf_requests").insert([

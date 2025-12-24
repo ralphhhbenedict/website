@@ -57,11 +57,15 @@ export const trackModalOpened = (modalName: string, properties?: Record<string, 
   track('Modal Opened', { modal_name: modalName, ...properties })
 }
 
-export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?: string) => {
+export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?: string, initialCaseStudy?: string) => {
+  const expandedSelection = initialCaseStudy && caseStudies.length > 1
   track('Case Study Requested', {
     case_studies: caseStudies,
     case_study_count: caseStudies.length,
-    service_interest: serviceInterest
+    service_interest: serviceInterest,
+    initial_case_study: initialCaseStudy,
+    expanded_selection: expandedSelection,
+    added_studies: expandedSelection ? caseStudies.filter(s => s !== initialCaseStudy) : [],
   })
 }
 

@@ -75,7 +75,7 @@ const hats = [
         type: "figjam",
       },
       {
-        label: "19-Page Technical PRD",
+        label: "19-Page Technical PRD (sensitive info redacted)",
         embedUrl: "/portfolio/Guarantee_Automation_PRD.pdf#toolbar=0&navpanes=0&scrollbar=0",
         type: "pdf",
       },

@@ -3,16 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, ArrowRight, Zap, Target, Users, Brain } from "lucide-react";
+import { CheckCircle, ArrowRight, Zap, Target, Users, Brain, Video } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
-import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError, trackEmailCaptured } from "@/lib/mixpanel";
+import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError, trackEmailCaptured, trackCTAClick } from "@/lib/mixpanel";
+import { LeaveALoom } from "./LeaveALoom";
 
 const Waitlist = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formStarted, setFormStarted] = useState(false);
+  const [loomOpen, setLoomOpen] = useState(false);
 
   const handleFocus = () => {
     if (!formStarted) {
@@ -76,9 +78,9 @@ const Waitlist = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 md:py-24">
+    <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8 md:py-12">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+        <div className="max-w-4xl mx-auto text-center space-y-5">
           {/* Headline */}
           <div className="space-y-4">
             <Badge variant="outline" className="border-primary/50 text-primary">
@@ -137,6 +139,34 @@ const Waitlist = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
+              <div className="flex items-center gap-3 mt-6">
+                <div className="h-px flex-1 bg-slate-700" />
+                <span className="text-sm text-slate-500">or</span>
+                <div className="h-px flex-1 bg-slate-700" />
+              </div>
+
+              {/* Loom CTA with hook */}
+              <div className="mt-4 space-y-3">
+                <p className="text-xl md:text-2xl font-semibold text-white">
+                  Got a problem that needs solving?
+                </p>
+                <p className="text-sm text-slate-400">
+                  Record a quick video explaining your challenge.<br />
+                  I'll review it and get back to you.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    trackCTAClick("leave_a_loom", "Walk me through it", "waitlist");
+                    setLoomOpen(true);
+                  }}
+                  className="w-full border-primary/50 text-primary hover:bg-primary/10 h-12 text-base"
+                >
+                  <Video className="w-5 h-5 mr-2" />
+                  Walk me through it
+                </Button>
+              </div>
               <p className="text-sm text-slate-500 mt-3">
                 Or DM me on{" "}
                 <a
@@ -155,6 +185,9 @@ const Waitlist = () => {
               <span className="text-lg">You're on the list. I'll be in touch.</span>
             </div>
           )}
+
+          {/* Leave a Loom Modal */}
+          <LeaveALoom open={loomOpen} onOpenChange={setLoomOpen} />
         </div>
       </div>
     </div>

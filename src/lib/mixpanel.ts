@@ -122,3 +122,36 @@ export const trackShareClicked = (method?: string) => {
     method,
   })
 }
+
+// Leave Me a Loom tracking
+export const trackLoomStarted = (mode: 'audio' | 'video') => {
+  track('Loom Recording Started', { mode })
+}
+
+export const trackLoomPaused = (durationSeconds: number) => {
+  track('Loom Recording Paused', { duration_seconds: durationSeconds })
+}
+
+export const trackLoomResumed = (pauseCount: number) => {
+  track('Loom Recording Resumed', { pause_count: pauseCount })
+}
+
+export const trackLoomCompleted = (mode: 'audio' | 'video', durationSeconds: number) => {
+  track('Loom Recording Completed', { mode, duration_seconds: durationSeconds })
+}
+
+export const trackLoomSubmitted = (mode: 'audio' | 'video', durationSeconds: number, fileSizeBytes: number) => {
+  track('Loom Submitted', {
+    mode,
+    duration_seconds: durationSeconds,
+    file_size_bytes: fileSizeBytes,
+  })
+}
+
+export const trackLoomError = (errorType: string, errorMessage: string) => {
+  track('Loom Error', { error_type: errorType, error_message: errorMessage })
+}
+
+export const trackTosAccepted = (source: string) => {
+  track('ToS Accepted', { source })
+}

@@ -61,22 +61,26 @@ const hats = [
       "50+ PRDs written",
       "100+ user interviews",
     ],
-    marketRate: "$90K-$150K",
+    marketRate: "$180K-$400K",
     // Portfolio items with descriptions
     portfolioItems: [
       {
         label: "E2E Product Artifact",
         embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/design/mB1trxPIqaiTxEhF8zlY1N/Portfolio?node-id=157-179539",
-        staticImage: "/portfolio/e2e-product-artifact.png",
         caption: "End-to-end product documentation showing user flows, wireframes, and design specs",
         type: "figma",
       },
       {
         label: "18-Month Platform Overhaul",
         embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/board/kMYjjnxIcGmplWQLAuuHp3/Guarantee-Automation-Final-Workflow?node-id=0-1",
-        staticImage: "/portfolio/platform-overhaul-figjam.png",
         caption: "Complex workflow diagram mapping 18-month platform migration with dependencies",
         type: "figjam",
+      },
+      {
+        label: "Discovery & Alignment",
+        embedUrl: "https://miro.com/app/live-embed/uXjVJXoD4XQ=/?embedMode=view_only_without_ui&moveToViewport=-3259,-1205,8804,6682&embedId=970812397963",
+        caption: "Strategic pitch board with competitive analysis, market positioning, and go-to-market strategy",
+        type: "miro",
       },
       {
         label: "19-Page Technical PRD (sensitive info redacted)",
@@ -115,7 +119,7 @@ const hats = [
     deliverables: [
       "$700K pre-seed raise",
       "Series A prep",
-      "$2.8M revenue impact",
+      "$28.8M revenue impact",
     ],
     marketRate: "$120K-$240K",
   },
@@ -172,10 +176,6 @@ export const SevenHats = () => {
     type: string;
   } | null>(null);
 
-  // Zoom magnifier state
-  const [showMagnifier, setShowMagnifier] = useState(false);
-  const [magnifierPos, setMagnifierPos] = useState({ x: 0, y: 0 });
-  const imageRef = useRef<HTMLImageElement>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -225,15 +225,6 @@ export const SevenHats = () => {
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
   }, [previewOpen]);
-
-  // Handle magnifier mouse move
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current) return;
-    const rect = imageRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setMagnifierPos({ x, y });
-  };
 
   const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; staticImage?: string; caption?: string; type: string }) => {
     setSelectedHat(hat);
@@ -451,43 +442,72 @@ export const SevenHats = () => {
 
           {!showForm ? (
             <>
-              {/* Figma/FigJam/PDF Embed - fills available space */}
+              {/* Content area - Live embed with blur magnifier OR PDF iframe */}
               <div
                 ref={embedContainerRef}
                 className="flex-1 relative bg-gray-100 overflow-hidden"
                 style={{
                   userSelect: "none",
                   WebkitUserSelect: "none",
-                  touchAction: "pan-y",  // Allow scroll, block pinch-zoom
+                  touchAction: "pan-y",
                 }}
               >
-                {selectedPortfolioItem && (
+                {selectedPortfolioItem && selectedPortfolioItem.type === "pdf" ? (
+                  /* PDF: Use iframe with scroll */
                   <iframe
                     src={selectedPortfolioItem.embedUrl}
                     className="absolute inset-0 w-full h-full border-0"
                     allowFullScreen
-                    style={{
-                      pointerEvents: selectedPortfolioItem.type === "pdf" ? "auto" : "none",
-                      touchAction: "pan-y",
-                    }}
+                    style={{ pointerEvents: "auto", touchAction: "pan-y" }}
+                  />
+                ) : selectedPortfolioItem?.type === "miro" ? (
+                  /* Miro: Crop bottom and right to hide all controls */
+                  <div className="absolute inset-0 overflow-hidden">
+                    <iframe
+                      src={selectedPortfolioItem?.embedUrl}
+                      className="absolute border-0"
+                      allowFullScreen
+                      style={{
+                        pointerEvents: "none",
+                        top: 0,
+                        left: 0,
+                        width: "calc(100% + 70px)", // Extra width to push right controls out of view
+                        height: "calc(100% + 80px)", // Extra height to push bottom toolbar out of view
+                      }}
+                    />
+                  </div>
+                ) : (
+                  /* Figma/FigJam: Live embed - view only */
+                  <iframe
+                    src={selectedPortfolioItem?.embedUrl}
+                    className="absolute inset-0 w-full h-full border-0"
+                    allowFullScreen
+                    style={{ pointerEvents: "none" }}
                   />
                 )}
               </div>
 
-              {/* Bottom bar with Request PDF button */}
-              <div className="p-4 border-t bg-background shrink-0 flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  {selectedPortfolioItem?.type === "pdf"
-                    ? "Full PRD document. Request access for editable version."
-                    : "Preview only. Request PDF for full details."}
-                </p>
-                <Button onClick={() => {
-                  setShowForm(true);
-                  trackFormStarted("portfolio_request");
-                }}>
-                  <FileText className="w-4 h-4 mr-2" />
-                  Request PDF
-                </Button>
+              {/* Caption + Request PDF button */}
+              <div className="p-4 border-t bg-background shrink-0">
+                {selectedPortfolioItem?.caption && (
+                  <p className="text-sm text-foreground mb-3 font-medium">
+                    {selectedPortfolioItem.caption}
+                  </p>
+                )}
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    {selectedPortfolioItem?.type === "pdf"
+                      ? "Full PRD document. Request access for editable version."
+                      : "Preview only. Request PDF for full details."}
+                  </p>
+                  <Button onClick={() => {
+                    setShowForm(true);
+                    trackFormStarted("portfolio_request");
+                  }}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Request PDF
+                  </Button>
+                </div>
               </div>
             </>
           ) : (

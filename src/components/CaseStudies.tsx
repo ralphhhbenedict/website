@@ -46,11 +46,13 @@ const caseStudies = [
     color: "primary",
     recent: true,
     achievements: [
+      "Fixed low-conversion registration flow",
       "Q4 Roadmap: 4 milestones, 20 initiatives across 4 pillars",
+      "Fixed landing page with [Redacted]% churn rate",
       "Found root cause of architectural data issues",
-      "Retention analysis revealing critical PMF gap",
-      "Data quality investigation: 85% faster bug diagnosis",
-      "Deployed 30 AI agents → 18 min to consolidate 4,593 files",
+      "Retention analysis: [Redacted]% R∞ (critical PMF gap)",
+      "KPI frameworks, growth analytics, Series A readiness",
+      "Data fix saving 85% bug diagnosis time",
     ],
     value: "$185K-$425K knowledge base (6 months)",
   },
@@ -82,13 +84,13 @@ const caseStudies = [
     color: "warning",
     recent: false,
     achievements: [
-      "$2.8M revenue impact",
+      "$28.8M revenue impact",
       "50+ user interviews conducted",
       "600+ slides created",
       "30+ products/features shipped",
       "Managed team of 5 (3 PMs, 1 designer, 1 Jr PM)",
     ],
-    value: "$2.8M revenue impact (8+ years)",
+    value: "$28.8M revenue impact (8+ years)",
   },
 ];
 
@@ -219,21 +221,19 @@ export const CaseStudies = () => {
                   key={achIndex}
                   className="flex items-start gap-2 text-sm text-foreground/80"
                 >
-                  {study.company !== "Resume.ai" && (
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
-                  )}
+                  <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
                   <span>{achievement}</span>
                 </div>
               ))}
             </div>
-            <div className="pt-4 border-t border-border/50 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-success font-semibold">
-                <DollarSign className="w-4 h-4" />
+            <div className="pt-4 border-t border-border/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2 text-success font-semibold text-sm sm:text-base">
+                <DollarSign className="w-4 h-4 shrink-0" />
                 <span>Value delivered: {study.value}</span>
               </div>
               <Button
                 size="sm"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_0_0_rgba(var(--primary),0.7)] hover:shadow-lg transition-all duration-300 animate-[glow_2s_ease-in-out_infinite] hover:animate-none"
+                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_0_0_rgba(var(--primary),0.7)] hover:shadow-lg transition-all duration-300 animate-[glow_2s_ease-in-out_infinite] hover:animate-none"
                 onClick={() => {
                   trackCTAClick("request_pdf", "Request PDF", study.company);
                   openModal(study.company);

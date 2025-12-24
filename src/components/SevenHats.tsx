@@ -99,7 +99,7 @@ const hats = [
       "Retention curves",
       "KPI frameworks",
     ],
-    marketRate: "$60K-$90K",
+    marketRate: "$100K-$160K",
   },
   {
     title: "Technical PM",
@@ -110,7 +110,7 @@ const hats = [
       "20+ automated workflows",
       "API integrations",
     ],
-    marketRate: "$72K-$120K",
+    marketRate: "$150K-$200K",
   },
   {
     title: "Strategy Consultant",
@@ -121,7 +121,7 @@ const hats = [
       "Series A prep",
       "$28.8M revenue impact",
     ],
-    marketRate: "$120K-$240K",
+    marketRate: "$190K-$285K",
   },
   {
     title: "Documentation Lead",
@@ -132,7 +132,7 @@ const hats = [
       "45 Miro boards",
       "Investor data rooms",
     ],
-    marketRate: "$48K-$72K",
+    marketRate: "$90K-$135K",
   },
   {
     title: "Scrum Master",
@@ -144,7 +144,7 @@ const hats = [
       "Backlog grooming",
       "Team of 6 PMs managed",
     ],
-    marketRate: "$60K-$90K",
+    marketRate: "$100K-$150K",
   },
   {
     title: "Founder / CEO",
@@ -157,7 +157,7 @@ const hats = [
       "Investor relations",
       "Company formation",
     ],
-    marketRate: "$90K-$150K",
+    marketRate: "$130K-$175K",
   },
 ];
 
@@ -418,7 +418,7 @@ export const SevenHats = () => {
                 Total if you hired separately:
               </p>
               <p className="text-3xl font-bold text-primary mt-1">
-                $540K - $912K
+                $940K - $1.5M
               </p>
             </div>
             <div className="text-lg font-medium">

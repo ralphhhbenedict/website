@@ -120,6 +120,17 @@ export const LeaveALoom = ({ open, onOpenChange }: LeaveALoomProps) => {
     }
   }, [open, reset]);
 
+  // Attach stream to video element when recording starts
+  useEffect(() => {
+    if ((state === "RECORDING" || state === "PAUSED") && videoRef.current && streamRef.current && mode === "video") {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current?.play().catch(console.error);
+      };
+      videoRef.current.play().catch(console.error);
+    }
+  }, [state, mode]);
+
   // Start recording
   const startRecording = async () => {
     if (!tosAccepted) {
@@ -140,13 +151,6 @@ export const LeaveALoom = ({ open, onOpenChange }: LeaveALoomProps) => {
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
-
-      // Set up video preview
-      if (videoRef.current && mode === "video") {
-        videoRef.current.srcObject = stream;
-        videoRef.current.muted = true;
-        await videoRef.current.play().catch(console.error);
-      }
 
       // Set up MediaRecorder
       const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
@@ -279,7 +283,7 @@ export const LeaveALoom = ({ open, onOpenChange }: LeaveALoomProps) => {
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from("intakes")
+        .from("Intakes")
         .upload(filename, blob, {
           contentType: blob.type,
           upsert: false,

@@ -2,10 +2,21 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/storybook-js/:path*",
-      "destination": "/storybook-js/:path*"
+      "src": "/storybook-js/(.*)",
+      "dest": "/storybook-js/$1"
+    },
+    {
+      "src": "/storybook-js",
+      "dest": "/storybook-js/index.html"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

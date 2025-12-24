@@ -57,7 +57,7 @@ const caseStudies = [
     value: "$185K-$425K knowledge base (6 months)",
   },
   {
-    company: "Resume.ai",
+    company: "Resu-ME AI Ventures Inc",
     industry: "AI/SaaS",
     duration: "18 months",
     role: "Founder & CEO",
@@ -65,6 +65,7 @@ const caseStudies = [
     icon: Rocket,
     color: "success",
     recent: false,
+    inStealth: true,
     achievements: [
       "607 Python scripts built",
       "$700K pre-seed prep",
@@ -198,6 +199,9 @@ export const CaseStudies = () => {
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-xl">{study.company}</CardTitle>
                     <Badge variant="outline">{study.industry}</Badge>
+                    {study.inStealth && (
+                      <Badge variant="destructive" className="bg-red-400/80">In Scrum</Badge>
+                    )}
                     {study.recent && (
                       <Badge variant="default">Most Recent</Badge>
                     )}

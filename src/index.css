@@ -6,6 +6,22 @@
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Blink animations - comparing options */
+@keyframes blink-opacity {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+@keyframes blink-darker {
+  0%, 50% { filter: brightness(1); }
+  51%, 100% { filter: brightness(0.6); }
+}
+
+@keyframes blink-glow {
+  0%, 50% { box-shadow: 0 0 10px 2px hsl(0 84% 60%); }
+  51%, 100% { box-shadow: none; }
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

@@ -1,20 +1,34 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Share2, Sparkles } from "lucide-react";
+import { Share2, Sparkles, Briefcase, Mail } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { CaseStudies } from "./CaseStudies";
 import { SevenHats } from "./SevenHats";
 import { HowIWork } from "./HowIWork";
 import Waitlist from "./Waitlist";
-import { trackTabChanged, trackShareClicked } from "@/lib/mixpanel";
+import { ExitIntentPopup } from "./ExitIntentPopup";
+import { StickyFooterCTA } from "./StickyFooterCTA";
+import { trackTabChanged, trackShareClicked, trackCTAClick } from "@/lib/mixpanel";
 
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
   const [shareOpen, setShareOpen] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState<string>("case-studies");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const waitlistRef = useRef<HTMLDivElement>(null);
+
+  const scrollToWork = () => {
+    trackCTAClick("see_my_work", "See My Work", "header");
+    tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const scrollToContact = () => {
+    trackCTAClick("get_in_touch", "Get in Touch", "header");
+    waitlistRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
   const handleShareProfile = async () => {
     const url = window.location.origin;
     trackShareClicked("native_or_modal");
@@ -87,7 +101,26 @@ const ProfileDashboard = () => {
                   Instagram
                 </a>
               </div>
-              <div className="flex items-center space-x-2 mt-3"></div>
+              {/* Above-fold CTA buttons */}
+              <div className="flex flex-wrap items-center gap-3 mt-4">
+                <Button
+                  size="sm"
+                  onClick={scrollToWork}
+                  className="group"
+                >
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  See My Work
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={scrollToContact}
+                  className="group hover:bg-primary hover:text-primary-foreground transition-all"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Get in Touch
+                </Button>
+              </div>
 
               {/* Mobile actions */}
               <div className="mt-4 md:hidden">
@@ -122,9 +155,11 @@ const ProfileDashboard = () => {
     </div>
 
     {/* Waitlist CTA Section */}
-    <Waitlist />
+    <div ref={waitlistRef}>
+      <Waitlist />
+    </div>
 
-    <div className="container mx-auto px-4 md:px-6 py-8">
+    <div ref={tabsRef} className="container mx-auto px-4 md:px-6 py-8">
       <Tabs
           defaultValue="case-studies"
           className="space-y-8"
@@ -190,6 +225,10 @@ const ProfileDashboard = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Optimization components */}
+    <ExitIntentPopup delay={5000} />
+    <StickyFooterCTA showAfterScroll={30} onCtaClick={scrollToContact} />
   </div>;
 };
 export default ProfileDashboard;

@@ -186,7 +186,8 @@ export const SevenHats = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const embedContainerRef = useRef<HTMLDivElement>(null);
-  const [selectedPortfolioIndex, setSelectedPortfolioIndex] = useState<string | null>(null);
+  // Auto-select first portfolio item to encourage engagement
+  const [selectedPortfolioIndex, setSelectedPortfolioIndex] = useState<string | null>("0");
   const [zoomAttempts, setZoomAttempts] = useState(0);
 
   // Block trackpad pinch-to-zoom for all portfolio previews

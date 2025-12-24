@@ -187,8 +187,10 @@ export const SevenHats = () => {
   const [submitted, setSubmitted] = useState(false);
   const embedContainerRef = useRef<HTMLDivElement>(null);
   const [selectedPortfolioIndex, setSelectedPortfolioIndex] = useState<string | null>(null);
+  const [zoomAttempts, setZoomAttempts] = useState(0);
 
   // Block trackpad pinch-to-zoom for all portfolio previews
+  // Auto-show form after 2 failed zoom attempts (conversion optimization)
   useEffect(() => {
     if (!previewOpen) return;
 
@@ -197,9 +199,18 @@ export const SevenHats = () => {
       if (e.ctrlKey) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        // Track zoom attempt
+        // Track zoom attempt and increment counter
         if (selectedHat && selectedPortfolioItem) {
           trackPortfolioZoomAttempted(selectedHat.title, selectedPortfolioItem.label, 'pinch');
+          setZoomAttempts((prev) => {
+            const newCount = prev + 1;
+            // After 2 attempts, show the form to capture frustrated user
+            if (newCount >= 2 && !showForm) {
+              setShowForm(true);
+              trackFormStarted("portfolio_request_auto_zoom");
+            }
+            return newCount;
+          });
         }
         return false;
       }
@@ -209,9 +220,18 @@ export const SevenHats = () => {
       // Block Cmd/Ctrl + Plus/Minus/Zero for keyboard zoom
       if ((e.metaKey || e.ctrlKey) && ["+", "-", "=", "0"].includes(e.key)) {
         e.preventDefault();
-        // Track zoom attempt
+        // Track zoom attempt and increment counter
         if (selectedHat && selectedPortfolioItem) {
           trackPortfolioZoomAttempted(selectedHat.title, selectedPortfolioItem.label, 'keyboard');
+          setZoomAttempts((prev) => {
+            const newCount = prev + 1;
+            // After 2 attempts, show the form to capture frustrated user
+            if (newCount >= 2 && !showForm) {
+              setShowForm(true);
+              trackFormStarted("portfolio_request_auto_zoom");
+            }
+            return newCount;
+          });
         }
       }
     };
@@ -224,13 +244,14 @@ export const SevenHats = () => {
       document.removeEventListener("wheel", handleWheel, { capture: true });
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, [previewOpen]);
+  }, [previewOpen, selectedHat, selectedPortfolioItem, showForm]);
 
   const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; staticImage?: string; caption?: string; type: string }) => {
     setSelectedHat(hat);
     setSelectedPortfolioItem(portfolioItem);
     setShowForm(false);
     setSubmitted(false);
+    setZoomAttempts(0); // Reset zoom counter for new preview
     // Prefill email from localStorage
     const savedEmail = localStorage.getItem("ralphhhbenedict_email");
     if (savedEmail) {

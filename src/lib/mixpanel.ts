@@ -69,9 +69,41 @@ export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?:
   })
 }
 
-export const trackEmailCaptured = (source: 'waitlist' | 'case_study_request', emailDomain?: string) => {
+export const trackEmailCaptured = (source: 'waitlist' | 'case_study_request' | 'portfolio_request', emailDomain?: string) => {
   track('Email Captured', {
     source,
     email_domain: emailDomain,
+  })
+}
+
+// Portfolio tracking for SevenHats
+export const trackPortfolioItemSelected = (hat: string, portfolioItem: string) => {
+  track('Portfolio Item Selected', {
+    hat,
+    portfolio_item: portfolioItem,
+  })
+}
+
+export const trackPortfolioPreviewOpened = (hat: string, portfolioItem: string, portfolioType: string) => {
+  track('Portfolio Preview Opened', {
+    hat,
+    portfolio_item: portfolioItem,
+    portfolio_type: portfolioType,
+  })
+}
+
+export const trackPortfolioZoomAttempted = (hat: string, portfolioItem: string, zoomType: 'pinch' | 'keyboard') => {
+  track('Portfolio Zoom Attempted', {
+    hat,
+    portfolio_item: portfolioItem,
+    zoom_type: zoomType,
+  })
+}
+
+export const trackPortfolioPDFRequested = (hat: string, portfolioItem: string, serviceInterest?: string) => {
+  track('Portfolio PDF Requested', {
+    hat,
+    portfolio_item: portfolioItem,
+    service_interest: serviceInterest,
   })
 }

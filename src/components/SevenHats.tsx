@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,15 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
+import {
+  trackPortfolioItemSelected,
+  trackPortfolioPreviewOpened,
+  trackPortfolioZoomAttempted,
+  trackPortfolioPDFRequested,
+  trackFormStarted,
+  trackFormSuccess,
+  trackEmailCaptured,
+} from "@/lib/mixpanel";
 
 const serviceOptions = [
   { value: "ai-ops", label: "AI Operations & Agent Swarms" },
@@ -164,6 +173,46 @@ export const SevenHats = () => {
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const embedContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedPortfolioIndex, setSelectedPortfolioIndex] = useState<string | null>(null);
+
+  // Block trackpad pinch-to-zoom for all portfolio previews
+  useEffect(() => {
+    if (!previewOpen) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // ctrlKey is true during trackpad pinch gestures on Mac
+      if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        // Track zoom attempt
+        if (selectedHat && selectedPortfolioItem) {
+          trackPortfolioZoomAttempted(selectedHat.title, selectedPortfolioItem.label, 'pinch');
+        }
+        return false;
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Block Cmd/Ctrl + Plus/Minus/Zero for keyboard zoom
+      if ((e.metaKey || e.ctrlKey) && ["+", "-", "=", "0"].includes(e.key)) {
+        e.preventDefault();
+        // Track zoom attempt
+        if (selectedHat && selectedPortfolioItem) {
+          trackPortfolioZoomAttempted(selectedHat.title, selectedPortfolioItem.label, 'keyboard');
+        }
+      }
+    };
+
+    // Capture phase to intercept before iframe gets it
+    document.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
+
+    return () => {
+      document.removeEventListener("wheel", handleWheel, { capture: true });
+      document.removeEventListener("keydown", handleKeyDown, { capture: true });
+    };
+  }, [previewOpen]);
 
   const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; type: string }) => {
     setSelectedHat(hat);
@@ -176,6 +225,8 @@ export const SevenHats = () => {
       setFormData((prev) => ({ ...prev, email: savedEmail }));
     }
     setPreviewOpen(true);
+    // Track preview opened
+    trackPortfolioPreviewOpened(hat.title, portfolioItem.label, portfolioItem.type);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -197,6 +248,14 @@ export const SevenHats = () => {
 
       localStorage.setItem("ralphhhbenedict_email", formData.email);
       setSubmitted(true);
+      // Track success
+      trackFormSuccess("portfolio_request");
+      trackEmailCaptured("portfolio_request", formData.email.split("@")[1]);
+      trackPortfolioPDFRequested(
+        selectedHat?.title || "Unknown",
+        selectedPortfolioItem?.label || "Unknown",
+        formData.serviceInterest
+      );
       toast({
         title: "Request received!",
         description: "I'll send the portfolio PDF to your email soon.",
@@ -204,6 +263,9 @@ export const SevenHats = () => {
     } catch (err) {
       console.error("Form submission error:", err);
       setSubmitted(true);
+      // Still track even on error (graceful degradation)
+      trackFormSuccess("portfolio_request");
+      trackEmailCaptured("portfolio_request", formData.email.split("@")[1]);
       toast({
         title: "Request received!",
         description: "I'll send the portfolio PDF to your email soon.",
@@ -255,26 +317,48 @@ export const SevenHats = () => {
                     {hat.marketRate}
                   </Badge>
                 </div>
-                {/* Portfolio items with description + View button */}
-                {hat.portfolioItems && hat.portfolioItems.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    {hat.portfolioItems.map((item, i) => (
-                      <div key={i} className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-muted-foreground truncate">
-                          {item.label}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-primary hover:text-primary/80 shrink-0 h-7 px-2"
-                          onClick={() => openPreview(hat, item)}
-                        >
-                          <Eye className="w-3 h-3 mr-1" />
-                          View
-                        </Button>
-                      </div>
-                    ))}
+                {/* Portfolio dropdown + View button */}
+                {hat.portfolioItems && hat.portfolioItems.length > 0 ? (
+                  <div className="mt-3 flex items-center gap-2">
+                    <Select
+                      value={selectedPortfolioIndex || ""}
+                      onValueChange={(value) => {
+                        setSelectedPortfolioIndex(value);
+                        if (hat.portfolioItems && value) {
+                          trackPortfolioItemSelected(hat.title, hat.portfolioItems[parseInt(value)].label);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="h-8 text-xs flex-1">
+                        <SelectValue placeholder="Select portfolio item..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {hat.portfolioItems.map((item, i) => (
+                          <SelectItem key={i} value={String(i)} className="text-xs">
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      size="sm"
+                      variant={selectedPortfolioIndex ? "default" : "ghost"}
+                      className={selectedPortfolioIndex ? "shrink-0 h-8 px-3" : "text-muted-foreground shrink-0 h-8 px-3"}
+                      onClick={() => {
+                        if (selectedPortfolioIndex && hat.portfolioItems) {
+                          openPreview(hat, hat.portfolioItems[parseInt(selectedPortfolioIndex)]);
+                        }
+                      }}
+                      disabled={!selectedPortfolioIndex}
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      {selectedPortfolioIndex ? "View" : "Choose One"}
+                    </Button>
                   </div>
+                ) : (
+                  <p className="mt-3 text-xs font-medium text-amber-500">
+                    Portfolio Coming Soon
+                  </p>
                 )}
               </div>
             </CardContent>
@@ -348,18 +432,12 @@ export const SevenHats = () => {
             <>
               {/* Figma/FigJam/PDF Embed - fills available space */}
               <div
+                ref={embedContainerRef}
                 className="flex-1 relative bg-gray-100 overflow-hidden"
                 style={{
                   userSelect: "none",
                   WebkitUserSelect: "none",
-                  touchAction: selectedPortfolioItem?.type === "pdf" ? "auto" : "none",
-                }}
-                onWheel={(e) => {
-                  // Block scroll wheel zoom for Figma (Cmd+scroll or pinch)
-                  // Allow for PDFs so users can scroll
-                  if (selectedPortfolioItem?.type !== "pdf" && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                  }
+                  touchAction: "pan-y",  // Allow scroll, block pinch-zoom
                 }}
               >
                 {selectedPortfolioItem && (
@@ -368,8 +446,8 @@ export const SevenHats = () => {
                     className="absolute inset-0 w-full h-full border-0"
                     allowFullScreen
                     style={{
-                      // PDFs need pointer events to scroll, Figma disabled to prevent zoom
                       pointerEvents: selectedPortfolioItem.type === "pdf" ? "auto" : "none",
+                      touchAction: "pan-y",
                     }}
                   />
                 )}
@@ -382,9 +460,12 @@ export const SevenHats = () => {
                     ? "Full PRD document. Request access for editable version."
                     : "Preview only. Request PDF for full details."}
                 </p>
-                <Button onClick={() => setShowForm(true)}>
+                <Button onClick={() => {
+                  setShowForm(true);
+                  trackFormStarted("portfolio_request");
+                }}>
                   <FileText className="w-4 h-4 mr-2" />
-                  {selectedPortfolioItem?.type === "pdf" ? "Request Access" : "Request PDF"}
+                  Request PDF
                 </Button>
               </div>
             </>
@@ -462,7 +543,7 @@ export const SevenHats = () => {
                       Back to Preview
                     </Button>
                     <Button type="submit" disabled={loading} className="flex-1">
-                      {loading ? "Sending..." : (selectedPortfolioItem?.type === "pdf" ? "Request Access" : "Request PDF")}
+                      {loading ? "Sending..." : "Request PDF"}
                     </Button>
                   </div>
                 </form>

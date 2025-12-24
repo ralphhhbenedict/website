@@ -4,15 +4,16 @@
   "framework": "vite",
   "routes": [
     {
-      "src": "/storybook-js/(.*)",
-      "dest": "/storybook-js/$1"
-    },
-    {
       "src": "/storybook-js",
-      "dest": "/storybook-js/index.html"
+      "status": 308,
+      "headers": { "Location": "/storybook-js/" }
     },
     {
       "handle": "filesystem"
+    },
+    {
+      "src": "/storybook-js/(.*)",
+      "dest": "/storybook-js/index.html"
     },
     {
       "src": "/(.*)",

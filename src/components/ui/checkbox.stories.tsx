@@ -66,7 +66,7 @@ export const CaseStudySelection: Story = {
       {[
         { company: "ComplyAI", industry: "AdTech", duration: "6 months" },
         { company: "Resume.ai", industry: "AI/SaaS", duration: "18 months" },
-        { company: "The Princeton Review", industry: "EdTech", duration: "4 years" },
+        { company: "The Princeton Review", industry: "EdTech", duration: "8+ years" },
       ].map((study) => (
         <div key={study.company} className="flex items-center space-x-3">
           <Checkbox id={study.company} defaultChecked={study.company === "ComplyAI"} />

@@ -219,7 +219,9 @@ export const CaseStudies = () => {
                   key={achIndex}
                   className="flex items-start gap-2 text-sm text-foreground/80"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                  {study.company !== "Resume.ai" && (
+                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                  )}
                   <span>{achievement}</span>
                 </div>
               ))}

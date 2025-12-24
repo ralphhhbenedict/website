@@ -107,3 +107,18 @@ export const trackPortfolioPDFRequested = (hat: string, portfolioItem: string, s
     service_interest: serviceInterest,
   })
 }
+
+// Tab navigation tracking
+export const trackTabChanged = (fromTab: string | null, toTab: string) => {
+  track('Tab Changed', {
+    from_tab: fromTab,
+    to_tab: toTab,
+  })
+}
+
+// Share tracking
+export const trackShareClicked = (method?: string) => {
+  track('Share Clicked', {
+    method,
+  })
+}

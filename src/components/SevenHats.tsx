@@ -67,16 +67,21 @@ const hats = [
       {
         label: "E2E Product Artifact",
         embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/design/mB1trxPIqaiTxEhF8zlY1N/Portfolio?node-id=157-179539",
+        staticImage: "/portfolio/e2e-product-artifact.png",
+        caption: "End-to-end product documentation showing user flows, wireframes, and design specs",
         type: "figma",
       },
       {
         label: "18-Month Platform Overhaul",
         embedUrl: "https://www.figma.com/embed?embed_host=share&hide-ui=1&url=https://www.figma.com/board/kMYjjnxIcGmplWQLAuuHp3/Guarantee-Automation-Final-Workflow?node-id=0-1",
+        staticImage: "/portfolio/platform-overhaul-figjam.png",
+        caption: "Complex workflow diagram mapping 18-month platform migration with dependencies",
         type: "figjam",
       },
       {
         label: "19-Page Technical PRD (sensitive info redacted)",
         embedUrl: "/portfolio/Guarantee_Automation_PRD.pdf#toolbar=0&navpanes=0&scrollbar=0",
+        caption: "Technical product requirements document with architecture diagrams and API specs",
         type: "pdf",
       },
     ],
@@ -162,8 +167,15 @@ export const SevenHats = () => {
   const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<{
     label: string;
     embedUrl: string;
+    staticImage?: string;
+    caption?: string;
     type: string;
   } | null>(null);
+
+  // Zoom magnifier state
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const [magnifierPos, setMagnifierPos] = useState({ x: 0, y: 0 });
+  const imageRef = useRef<HTMLImageElement>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -214,7 +226,16 @@ export const SevenHats = () => {
     };
   }, [previewOpen]);
 
-  const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; type: string }) => {
+  // Handle magnifier mouse move
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMagnifierPos({ x, y });
+  };
+
+  const openPreview = (hat: typeof hats[0], portfolioItem: { label: string; embedUrl: string; staticImage?: string; caption?: string; type: string }) => {
     setSelectedHat(hat);
     setSelectedPortfolioItem(portfolioItem);
     setShowForm(false);

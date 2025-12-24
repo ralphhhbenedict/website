@@ -9,14 +9,19 @@ import { CaseStudies } from "./CaseStudies";
 import { SevenHats } from "./SevenHats";
 import { HowIWork } from "./HowIWork";
 import Waitlist from "./Waitlist";
+import { trackTabChanged, trackShareClicked } from "@/lib/mixpanel";
+
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
   const [shareOpen, setShareOpen] = React.useState(false);
+  const [currentTab, setCurrentTab] = React.useState<string>("case-studies");
   const handleShareProfile = async () => {
     const url = window.location.origin;
+    trackShareClicked("native_or_modal");
     if (navigator.share) {
       try {
         await navigator.share({ title: "Ralph Bautista", url });
+        trackShareClicked("native_share");
       } catch {
         // User canceled or share failed; do nothing. Avoid opening modal after native sheet.
       }
@@ -40,20 +45,20 @@ const ProfileDashboard = () => {
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Ralph Benedict Bautista</h1>
-              <div className="text-lg text-muted-foreground">
-                <span className="flex items-center gap-3 flex-wrap">
-                  <b>Currently: Building 2 Startups</b>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-gray-200 rounded-full text-xs">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                    </span>
-                    <span className="text-gray-600">Accepting 1 more client</span>
+              <div className="mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 rounded-full text-xs font-medium">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                   </span>
+                  <span className="text-green-700">Accepting 1 more client</span>
                 </span>
+              </div>
+              <div className="text-lg text-muted-foreground">
+                <span className="block"><b>Currently: Building 2 Startups</b></span>
                 <span className="block">Previously: Senior Director of Product</span>
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm font-semibold text-foreground/80">
                 NYC | LA | SF | MNL
               </div>
               <div className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mt-2">
@@ -120,7 +125,14 @@ const ProfileDashboard = () => {
     <Waitlist />
 
     <div className="container mx-auto px-4 md:px-6 py-8">
-      <Tabs defaultValue="case-studies" className="space-y-8">
+      <Tabs
+          defaultValue="case-studies"
+          className="space-y-8"
+          onValueChange={(value) => {
+            trackTabChanged(currentTab, value);
+            setCurrentTab(value);
+          }}
+        >
         <TabsList className="w-full bg-muted/50 overflow-x-auto flex gap-2 [&>button]:shrink-0 scrollbar-none">
           <TabsTrigger value="case-studies" className="data-[state=active]:bg-card">Case Studies</TabsTrigger>
           <TabsTrigger value="seven-hats" className="data-[state=active]:bg-card">The 7 Hats</TabsTrigger>
@@ -150,20 +162,24 @@ const ProfileDashboard = () => {
         </DialogHeader>
         <div className="grid grid-cols-2 gap-3">
           <Button variant="outline" onClick={() => {
+            trackShareClicked("linkedin");
             const url = window.location.origin;
             const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
             window.open(shareUrl, "_blank", "noopener,noreferrer");
           }}>LinkedIn</Button>
           <Button variant="outline" onClick={() => {
+            trackShareClicked("twitter");
             const url = window.location.origin;
             const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("Check out Ralph Bautista")}`;
             window.open(shareUrl, "_blank", "noopener,noreferrer");
           }}>X (Twitter)</Button>
           <Button variant="outline" onClick={async () => {
+            trackShareClicked("copy_link");
             const url = window.location.origin;
             try { await navigator.clipboard.writeText(url); toast({ title: "Link copied", description: url }); } catch { toast({ title: "Unable to copy", description: url }); }
           }}>Copy link</Button>
           <Button variant="outline" onClick={() => {
+            trackShareClicked("email");
             const url = window.location.origin;
             const mailto = `mailto:?subject=${encodeURIComponent("Ralph Bautista Profile")}&body=${encodeURIComponent(url)}`;
             window.location.href = mailto;

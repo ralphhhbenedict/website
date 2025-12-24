@@ -51,7 +51,7 @@ const caseStudies = [
       "Data quality investigation: 85% faster bug diagnosis",
       "Deployed 30 AI agents → 18 min to consolidate 4,593 files",
     ],
-    value: "$185K-$425K knowledge base",
+    value: "$185K-$425K knowledge base (6 months)",
   },
   {
     company: "Resume.ai",
@@ -69,7 +69,7 @@ const caseStudies = [
       "Cap table, legal, investor relations",
       "Company formation from scratch",
     ],
-    value: "$700K pre-seed prep",
+    value: "$700K pre-seed prep (9 months)",
   },
   {
     company: "The Princeton Review",
@@ -87,7 +87,7 @@ const caseStudies = [
       "30+ products/features shipped",
       "Managed team of 5 (3 PMs, 1 designer, 1 Jr PM)",
     ],
-    value: "$2.8M revenue impact",
+    value: "$2.8M revenue impact (8+ years)",
   },
 ];
 

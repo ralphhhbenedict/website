@@ -1,6 +1,6 @@
 import mixpanel from 'mixpanel-browser'
 
-const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || 'a400533785f80ae071a18393de060d52'
+const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || 'e33a77b6ed1f2cb817270b89435ae93d'
 
 let initialized = false
 

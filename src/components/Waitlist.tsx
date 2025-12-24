@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ArrowRight, Zap, Target, Users, Brain } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
-import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError } from "@/lib/mixpanel";
+import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError, trackEmailCaptured } from "@/lib/mixpanel";
 
 const Waitlist = () => {
   const [email, setEmail] = useState("");
@@ -50,6 +50,7 @@ const Waitlist = () => {
         localStorage.setItem("ralphhhbenedict_email", email);
         setSubmitted(true);
         trackFormSuccess("waitlist");
+        trackEmailCaptured("waitlist", email.split("@")[1]);
         toast({
           title: "You're on the list",
           description: "I'll reach out when I have availability.",

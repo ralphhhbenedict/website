@@ -22,7 +22,7 @@ import {
 import { Building2, Rocket, GraduationCap, Clock, DollarSign, CheckCircle2, FileText } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
-import { trackModalOpened, trackFormStarted, trackCaseStudyRequested, trackFormSuccess, trackFormError, trackCTAClick } from "@/lib/mixpanel";
+import { trackModalOpened, trackFormStarted, trackCaseStudyRequested, trackFormSuccess, trackFormError, trackCTAClick, trackEmailCaptured } from "@/lib/mixpanel";
 
 const serviceOptions = [
   { value: "ai-ops", label: "AI Operations & Agent Swarms", description: "Automate workflows with AI agents" },
@@ -153,6 +153,7 @@ export const CaseStudies = () => {
       localStorage.setItem("ralphhhbenedict_email", formData.email);
       setSubmitted(true);
       trackFormSuccess("case_study_request");
+      trackEmailCaptured("case_study_request", formData.email.split("@")[1]);
       toast({
         title: "Request received!",
         description: "I'll send the case studies to your email soon.",

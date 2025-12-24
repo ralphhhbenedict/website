@@ -64,3 +64,10 @@ export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?:
     service_interest: serviceInterest
   })
 }
+
+export const trackEmailCaptured = (source: 'waitlist' | 'case_study_request', emailDomain?: string) => {
+  track('Email Captured', {
+    source,
+    email_domain: emailDomain,
+  })
+}

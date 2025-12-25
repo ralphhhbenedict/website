@@ -203,10 +203,20 @@ If anything goes wrong:
 Local: /Users/ralphbautista/website-ralphhhbenedict (CANONICAL)
          │
          ▼
-GitHub: ralphhhbenedict/website (HEAD: 3d6dd51)
+GitHub: ralphhhbenedict/website
          │
          ▼
-Vercel: resu-me-ai/website → ralphhhbenedict.com
-        (orgId: team_ki8vktXES7zoI5rbNDnc3Kri)
+Vercel: Personal Account (ralphhhbenedict)
+        vercel.com/resu-me-ai/website → ralphhhbenedict.com
+        (orgId: team_Ek5ackXgav3XY6t0N1COKfiM)
 ```
+
+## Vercel Account Disambiguation
+
+| Account | CLI User | URL | Purpose |
+|---------|----------|-----|---------|
+| **Personal (Hobby)** | `ralphhhbenedict` | `vercel.com/resu-me-ai` | Personal website (ralphhhbenedict.com) |
+| **Pro Team** | `ralphbenedict` | `vercel.com/rbbautista312-gmailcoms-projects` | Resume startup projects |
+
+**Token for Personal account:** See `.env` → `VERCEL_TOKEN_PERSONAL`
 

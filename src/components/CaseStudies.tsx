@@ -188,23 +188,24 @@ export const CaseStudies = () => {
           }`}
         >
           <CardHeader className="pb-4">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4">
-                <div
-                  className={`w-12 h-12 rounded-lg bg-${study.color}/10 flex items-center justify-center`}
-                >
-                  <study.icon className={`w-6 h-6 text-${study.color}`} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-${study.color}/10 flex items-center justify-center shrink-0`}
+              >
+                <study.icon className={`w-5 h-5 sm:w-6 sm:h-6 text-${study.color}`} />
+              </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                     <CardTitle className="text-xl">{study.company}</CardTitle>
-                    <Badge variant="outline">{study.industry}</Badge>
-                    {study.inStealth && (
-                      <Badge variant="destructive" className="bg-red-400/80">In Scrum</Badge>
-                    )}
-                    {study.recent && (
-                      <Badge variant="default">Most Recent</Badge>
-                    )}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge variant="outline">{study.industry}</Badge>
+                      {study.inStealth && (
+                        <Badge variant="destructive" className="bg-red-400/80">In Scrum</Badge>
+                      )}
+                      {study.recent && (
+                        <Badge variant="default">Most Recent</Badge>
+                      )}
+                    </div>
                   </div>
                   <p className="text-primary font-medium mt-1">{study.role}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
@@ -215,7 +216,6 @@ export const CaseStudies = () => {
                     <span>{study.subtitle}</span>
                   </div>
                 </div>
-              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">

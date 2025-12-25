@@ -1,73 +1,98 @@
-# Welcome to your Lovable project
+# ralphhhbenedict.com
 
-## Project info
+Personal website and R&D sandbox for Resume Studio public profiles.
 
-**URL**: https://lovable.dev/projects/7b9d5927-c18a-450e-9a95-5efe2a83cede
+## Purpose
 
-## How can I edit this code?
+This site serves dual purposes:
+1. **Personal Portfolio** - Showcasing work as a product leader and consultant
+2. **Component Sandbox** - Testing components that will become templates for Resume Studio's public-facing profile feature
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Framework:** Vite + React 18 + TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Analytics:** Mixpanel
+- **Backend:** Supabase
+- **Hosting:** Vercel (Personal account)
+- **Documentation:** Storybook
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7b9d5927-c18a-450e-9a95-5efe2a83cede) and start prompting.
+## Quick Start
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Install dependencies
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start dev server
 npm run dev
+
+# Start Storybook
+npm run storybook
+
+# Build for production
+npm run build
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+├── src/
+│   ├── components/     # React components
+│   ├── lib/           # Utilities (mixpanel, supabase)
+│   └── pages/         # Page components
+├── docs/              # Strategy & tracking docs
+│   ├── COMPONENT_CATALOG.md
+│   ├── MIXPANEL_TRACKING_PLAN.md
+│   ├── PROFILE_BUILDER_STRATEGY.md
+│   └── VERCEL_GITHUB_CONSOLIDATION.md
+├── .storybook/        # Storybook config
+└── public/            # Static assets
+```
 
-**Use GitHub Codespaces**
+## Key Components
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Component | Purpose | Status |
+|-----------|---------|--------|
+| ProfileDashboard | Main layout with tabs | Testing |
+| SevenHats | Portfolio grid by skill category | Testing |
+| CaseStudies | Project showcase cards | Testing |
+| HowIWork | Working style description | Testing |
+| ExitIntentPopup | Exit intent email capture | Testing |
+| StickyFooterCTA | Scroll-triggered CTA | Testing |
 
-## What technologies are used for this project?
+See `docs/COMPONENT_CATALOG.md` for full inventory.
 
-This project is built with:
+## Analytics
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Mixpanel tracking is implemented for:
+- Page views
+- CTA clicks
+- Form submissions
+- Portfolio interactions
+- Tab navigation
 
-## How can I deploy this project?
+See `docs/MIXPANEL_TRACKING_PLAN.md` for event specifications.
 
-Simply open [Lovable](https://lovable.dev/projects/7b9d5927-c18a-450e-9a95-5efe2a83cede) and click on Share -> Publish.
+## Deployment
 
-## Can I connect a custom domain to my Lovable project?
+```
+Local: /Users/ralphbautista/website-ralphhhbenedict
+         ↓
+GitHub: ralphhhbenedict/website
+         ↓
+Vercel: vercel.com/resu-me-ai/website → ralphhhbenedict.com
+```
 
-Yes, you can!
+Deploy via:
+```bash
+vercel --prod --token $VERCEL_TOKEN_PERSONAL
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Related
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- **Resume Studio** - Parent product this sandbox feeds into
+- **Profile Builder Strategy** - See `docs/PROFILE_BUILDER_STRATEGY.md`
+
+---
+
+*Last Updated: December 25, 2024*

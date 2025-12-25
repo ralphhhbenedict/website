@@ -195,17 +195,15 @@ export const CaseStudies = () => {
                 <study.icon className={`w-5 h-5 sm:w-6 sm:h-6 text-${study.color}`} />
               </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <CardTitle className="text-xl">{study.company}</CardTitle>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <Badge variant="outline">{study.industry}</Badge>
-                      {study.inStealth && (
-                        <Badge variant="destructive" className="bg-red-400/80">In Scrum</Badge>
-                      )}
-                      {study.recent && (
-                        <Badge variant="default">Most Recent</Badge>
-                      )}
-                    </div>
+                  <CardTitle className="text-lg sm:text-xl leading-tight">{study.company}</CardTitle>
+                  <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <Badge variant="outline">{study.industry}</Badge>
+                    {study.inStealth && (
+                      <Badge variant="destructive" className="bg-red-400/80">In Scrum</Badge>
+                    )}
+                    {study.recent && (
+                      <Badge variant="default">Most Recent</Badge>
+                    )}
                   </div>
                   <p className="text-primary font-medium mt-1">{study.role}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">

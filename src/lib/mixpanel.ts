@@ -1,65 +1,117 @@
-import mixpanel from 'mixpanel-browser'
+/**
+ * Dual-Fire Analytics (Mixpanel + PostHog)
+ * Portfolio site: ralphhhbenedict
+ *
+ * Unified with Resu-ME analytics infrastructure
+ */
 
-const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || 'e33a77b6ed1f2cb817270b89435ae93d'
+import mixpanel from 'mixpanel-browser'
+import posthog from 'posthog-js'
+
+// Unified tokens (same as Resu-ME)
+const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || 'a400533785f80ae071a18393de060d52'
+const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || 'phc_CqKZWjhSLToygqHWpRUk8AuAnRDsr49I3yg8AmGQvsk'
+const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com'
 
 let initialized = false
 
 export const initMixpanel = () => {
   if (initialized || typeof window === 'undefined') return
 
+  // Initialize Mixpanel
   mixpanel.init(MIXPANEL_TOKEN, {
     track_pageview: true,
     persistence: 'localStorage',
     debug: import.meta.env.DEV,
+    cookie_domain: '.resu-me.ai', // Cross-subdomain tracking
+  })
+
+  // Register super properties
+  mixpanel.register({
+    domain: 'portfolio',
+    app_version: '1.0.0',
+    platform: 'web',
+  })
+
+  // Initialize PostHog
+  posthog.init(POSTHOG_KEY, {
+    api_host: POSTHOG_HOST,
+    capture_pageview: true,
+    capture_pageleave: true,
+    cross_subdomain_cookie: true,
+    session_recording: {
+      maskAllInputs: false,
+      maskInputOptions: { password: true },
+    },
   })
 
   initialized = true
-  console.log('[Mixpanel] Initialized', import.meta.env.DEV ? '(debug mode)' : '')
+  console.log('[Analytics] Initialized (Mixpanel + PostHog)', import.meta.env.DEV ? '(debug mode)' : '')
 }
 
+// Dual-fire track function
 export const track = (event: string, properties?: Record<string, unknown>) => {
   if (!initialized) initMixpanel()
-  mixpanel.track(event, properties)
-  if (import.meta.env.DEV) console.log('[Mixpanel]', event, properties)
+
+  const enriched = {
+    ...properties,
+    timestamp: new Date().toISOString(),
+  }
+
+  // Fire to both
+  mixpanel.track(event, enriched)
+  posthog.capture(event, enriched)
+
+  if (import.meta.env.DEV) console.log('[Analytics]', event, enriched)
 }
 
-export const identify = (userId: string) => {
+export const identify = (userId: string, traits?: Record<string, unknown>) => {
   if (!initialized) initMixpanel()
   mixpanel.identify(userId)
+  if (traits) mixpanel.people.set(traits)
+  posthog.identify(userId, traits)
 }
 
-// Pre-defined events
+export const reset = () => {
+  mixpanel.reset()
+  posthog.reset()
+}
+
+// ============================================
+// Pre-defined events (unchanged API)
+// ============================================
+
 export const trackPageView = (pageName: string) => {
-  track('Page Viewed', { page_name: pageName })
+  track('page_viewed', { page_name: pageName })
 }
 
 export const trackCTAClick = (ctaType: string, ctaText: string, location?: string) => {
-  track('CTA Clicked', { cta_type: ctaType, cta_text: ctaText, location })
+  track('cta_clicked', { cta_type: ctaType, cta_text: ctaText, location })
 }
 
 export const trackFormStarted = (formType: string) => {
-  track('Form Started', { form_type: formType })
+  track('form_started', { form_type: formType })
 }
 
 export const trackFormSubmitted = (formType: string, properties?: Record<string, unknown>) => {
-  track('Form Submitted', { form_type: formType, ...properties })
+  track('form_submitted', { form_type: formType, ...properties })
 }
 
 export const trackFormSuccess = (formType: string) => {
-  track('Form Success', { form_type: formType })
+  track('form_success', { form_type: formType })
 }
 
 export const trackFormError = (formType: string, error: string) => {
-  track('Form Error', { form_type: formType, error })
+  track('form_error', { form_type: formType, error })
 }
 
 export const trackModalOpened = (modalName: string, properties?: Record<string, unknown>) => {
-  track('Modal Opened', { modal_name: modalName, ...properties })
+  track('modal_opened', { modal_name: modalName, ...properties })
 }
 
 export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?: string, initialCaseStudy?: string) => {
   const expandedSelection = initialCaseStudy && caseStudies.length > 1
-  track('Case Study Requested', {
+  track('case_study_requested', {
     case_studies: caseStudies,
     case_study_count: caseStudies.length,
     service_interest: serviceInterest,
@@ -70,7 +122,7 @@ export const trackCaseStudyRequested = (caseStudies: string[], serviceInterest?:
 }
 
 export const trackEmailCaptured = (source: 'waitlist' | 'case_study_request' | 'portfolio_request', emailDomain?: string) => {
-  track('Email Captured', {
+  track('email_captured', {
     source,
     email_domain: emailDomain,
   })
@@ -78,14 +130,14 @@ export const trackEmailCaptured = (source: 'waitlist' | 'case_study_request' | '
 
 // Portfolio tracking for SevenHats
 export const trackPortfolioItemSelected = (hat: string, portfolioItem: string) => {
-  track('Portfolio Item Selected', {
+  track('portfolio_item_selected', {
     hat,
     portfolio_item: portfolioItem,
   })
 }
 
 export const trackPortfolioPreviewOpened = (hat: string, portfolioItem: string, portfolioType: string) => {
-  track('Portfolio Preview Opened', {
+  track('portfolio_preview_opened', {
     hat,
     portfolio_item: portfolioItem,
     portfolio_type: portfolioType,
@@ -93,7 +145,7 @@ export const trackPortfolioPreviewOpened = (hat: string, portfolioItem: string, 
 }
 
 export const trackPortfolioZoomAttempted = (hat: string, portfolioItem: string, zoomType: 'pinch' | 'keyboard') => {
-  track('Portfolio Zoom Attempted', {
+  track('portfolio_zoom_attempted', {
     hat,
     portfolio_item: portfolioItem,
     zoom_type: zoomType,
@@ -101,7 +153,7 @@ export const trackPortfolioZoomAttempted = (hat: string, portfolioItem: string, 
 }
 
 export const trackPortfolioPDFRequested = (hat: string, portfolioItem: string, serviceInterest?: string) => {
-  track('Portfolio PDF Requested', {
+  track('portfolio_pdf_requested', {
     hat,
     portfolio_item: portfolioItem,
     service_interest: serviceInterest,
@@ -110,7 +162,7 @@ export const trackPortfolioPDFRequested = (hat: string, portfolioItem: string, s
 
 // Tab navigation tracking
 export const trackTabChanged = (fromTab: string | null, toTab: string) => {
-  track('Tab Changed', {
+  track('tab_changed', {
     from_tab: fromTab,
     to_tab: toTab,
   })
@@ -118,30 +170,30 @@ export const trackTabChanged = (fromTab: string | null, toTab: string) => {
 
 // Share tracking
 export const trackShareClicked = (method?: string) => {
-  track('Share Clicked', {
+  track('share_clicked', {
     method,
   })
 }
 
 // Leave Me a Loom tracking
 export const trackLoomStarted = (mode: 'audio' | 'video') => {
-  track('Loom Recording Started', { mode })
+  track('loom_recording_started', { mode })
 }
 
 export const trackLoomPaused = (durationSeconds: number) => {
-  track('Loom Recording Paused', { duration_seconds: durationSeconds })
+  track('loom_recording_paused', { duration_seconds: durationSeconds })
 }
 
 export const trackLoomResumed = (pauseCount: number) => {
-  track('Loom Recording Resumed', { pause_count: pauseCount })
+  track('loom_recording_resumed', { pause_count: pauseCount })
 }
 
 export const trackLoomCompleted = (mode: 'audio' | 'video', durationSeconds: number) => {
-  track('Loom Recording Completed', { mode, duration_seconds: durationSeconds })
+  track('loom_recording_completed', { mode, duration_seconds: durationSeconds })
 }
 
 export const trackLoomSubmitted = (mode: 'audio' | 'video', durationSeconds: number, fileSizeBytes: number) => {
-  track('Loom Submitted', {
+  track('loom_submitted', {
     mode,
     duration_seconds: durationSeconds,
     file_size_bytes: fileSizeBytes,
@@ -149,9 +201,9 @@ export const trackLoomSubmitted = (mode: 'audio' | 'video', durationSeconds: num
 }
 
 export const trackLoomError = (errorType: string, errorMessage: string) => {
-  track('Loom Error', { error_type: errorType, error_message: errorMessage })
+  track('loom_error', { error_type: errorType, error_message: errorMessage })
 }
 
 export const trackTosAccepted = (source: string) => {
-  track('ToS Accepted', { source })
+  track('tos_accepted', { source })
 }

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +12,7 @@ import Waitlist from "./Waitlist";
 import { ExitIntentPopup } from "./ExitIntentPopup";
 import { StickyFooterCTA } from "./StickyFooterCTA";
 import { trackTabChanged, trackShareClicked, trackCTAClick } from "@/lib/mixpanel";
+import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
@@ -20,13 +21,32 @@ const ProfileDashboard = () => {
   const tabsRef = useRef<HTMLDivElement>(null);
   const waitlistRef = useRef<HTMLDivElement>(null);
 
+  // V1.2 Portfolio Analytics - Profile Page Tracking
+  const {
+    trackPageViewed,
+    trackCtaClicked: trackPortfolioCta,
+    createSectionRef,
+  } = usePortfolioAnalytics();
+
+  // Track page view on mount
+  useEffect(() => {
+    trackPageViewed();
+  }, [trackPageViewed]);
+
+  // Section refs for viewport tracking
+  const caseStudiesRef = createSectionRef('case-studies');
+  const sevenHatsRef = createSectionRef('seven-hats');
+  const howIWorkRef = createSectionRef('how-i-work');
+
   const scrollToWork = () => {
     trackCTAClick("see_my_work", "See My Work", "header");
+    trackPortfolioCta("see_my_work", "See My Work", "header");
     tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const scrollToContact = () => {
     trackCTAClick("get_in_touch", "Get in Touch", "header");
+    trackPortfolioCta("get_in_touch", "Get in Touch", "header");
     waitlistRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
   const handleShareProfile = async () => {
@@ -175,15 +195,21 @@ const ProfileDashboard = () => {
         </TabsList>
 
         <TabsContent value="case-studies">
-          <CaseStudies />
+          <div ref={caseStudiesRef}>
+            <CaseStudies />
+          </div>
         </TabsContent>
 
         <TabsContent value="seven-hats">
-          <SevenHats />
+          <div ref={sevenHatsRef}>
+            <SevenHats />
+          </div>
         </TabsContent>
 
         <TabsContent value="how-i-work">
-          <HowIWork />
+          <div ref={howIWorkRef}>
+            <HowIWork />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

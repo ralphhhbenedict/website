@@ -1,10 +1,9 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { initMixpanel, trackPageView } from './lib/mixpanel'
+import { initMixpanel } from './lib/mixpanel'
 
-// Initialize Mixpanel
+// Initialize Mixpanel (page views tracked by usePortfolioAnalytics)
 initMixpanel()
-trackPageView('Home')
 
 createRoot(document.getElementById("root")!).render(<App />);

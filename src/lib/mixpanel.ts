@@ -32,7 +32,7 @@ export const initMixpanel = () => {
 
   // Initialize Mixpanel
   mixpanel.init(MIXPANEL_TOKEN, {
-    track_pageview: true,
+    track_pageview: false, // Disabled - we track manually via usePortfolioAnalytics
     persistence: 'localStorage',
     debug: import.meta.env.DEV,
     ...(cookieDomain && { cookie_domain: cookieDomain }),

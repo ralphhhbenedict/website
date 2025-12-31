@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +13,7 @@ import {
   Brain,
   Sparkles,
 } from "lucide-react";
+import { track } from "@/lib/mixpanel";
 
 const services = [
   {
@@ -48,6 +50,38 @@ const agentStats = [
 ];
 
 export const HowIWork = () => {
+  const hasTrackedView = useRef(false);
+  const trackedStats = useRef<Set<string>>(new Set());
+
+  // Track section view on mount
+  useEffect(() => {
+    if (!hasTrackedView.current) {
+      track("how_i_work_viewed", {
+        timestamp: new Date().toISOString(),
+      });
+      hasTrackedView.current = true;
+    }
+  }, []);
+
+  // Track stat engagement (first time only)
+  const trackStatEngagement = (statLabel: string) => {
+    if (!trackedStats.current.has(statLabel)) {
+      track("how_i_work_stat_engaged", {
+        stat_label: statLabel,
+        timestamp: new Date().toISOString(),
+      });
+      trackedStats.current.add(statLabel);
+    }
+  };
+
+  // Track service card interaction
+  const trackServiceViewed = (serviceTitle: string) => {
+    track("how_i_work_service_viewed", {
+      service_title: serviceTitle,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* The 18-Minute Story */}
@@ -74,7 +108,8 @@ export const HowIWork = () => {
             {agentStats.map((stat) => (
               <div
                 key={stat.label}
-                className="text-center p-4 bg-white/5 rounded-lg border border-white/10"
+                className="text-center p-4 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                onMouseEnter={() => trackStatEngagement(stat.label)}
               >
                 <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
                 <div className="text-2xl font-bold text-white">{stat.value}</div>
@@ -150,7 +185,8 @@ export const HowIWork = () => {
           {services.map((service) => (
             <Card
               key={service.title}
-              className="shadow-sm border-border/50 hover:shadow-md transition-shadow"
+              className="shadow-sm border-border/50 hover:shadow-md transition-shadow cursor-pointer"
+              onMouseEnter={() => trackServiceViewed(service.title)}
             >
               <CardContent className="p-5 text-center">
                 <div

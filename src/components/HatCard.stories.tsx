@@ -142,7 +142,7 @@ export const StrategyConsultant: Story = {
     deliverables: [
       "$700K pre-seed raise",
       "Series A prep",
-      "$28.8M revenue impact",
+      "$2.5M+ dev value delivered",
     ],
     marketRate: "$120K-$240K",
     portfolioItems: undefined,

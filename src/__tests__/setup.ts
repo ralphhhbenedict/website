@@ -5,9 +5,9 @@ class MockIntersectionObserver {
   readonly root: Element | null = null
   readonly rootMargin: string = ''
   readonly thresholds: ReadonlyArray<number> = []
-  
+
   constructor(private callback: IntersectionObserverCallback) {}
-  
+
   observe() {}
   unobserve() {}
   disconnect() {}
@@ -49,4 +49,5 @@ Object.defineProperty(window, 'ResizeObserver', {
   configurable: true,
   value: MockResizeObserver,
 })
+
 

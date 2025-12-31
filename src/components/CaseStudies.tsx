@@ -85,13 +85,13 @@ const caseStudies = [
     color: "warning",
     recent: false,
     achievements: [
-      "$28.8M revenue impact",
-      "50+ user interviews conducted",
-      "600+ slides created",
       "30+ products/features shipped",
+      "$2.5M+ in development value delivered",
+      "Led AI/ML recommendation engine build",
+      "50+ user interviews conducted",
       "Managed team of 5 (3 PMs, 1 designer, 1 Jr PM)",
     ],
-    value: "$28.8M revenue impact (8+ years)",
+    value: "30+ products, $2.5M+ dev value (8+ years)",
   },
 ];
 

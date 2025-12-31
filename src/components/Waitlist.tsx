@@ -86,13 +86,11 @@ const Waitlist = () => {
             <Badge variant="outline" className="border-primary/50 text-primary">
               Now Accepting Clients
             </Badge>
-            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-              The Swiss Army Knife<br />Your Company Needs
+            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight text-balance">
+              The Swiss Army Knife Your Company Needs
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              8+ years as a PM. From IC to Senior Director to Founder/CEO.
-              <br />
-              I do both: the strategy AND the systems to scale it.
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto text-balance">
+              8+ years as a PM. From IC to Senior Director to Founder/CEO. I do both: the strategy AND the systems to scale it.
             </p>
           </div>
 

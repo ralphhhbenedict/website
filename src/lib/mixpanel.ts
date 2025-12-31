@@ -18,27 +18,42 @@ let initialized = false
 export const initMixpanel = () => {
   if (initialized || typeof window === 'undefined') return
 
+  // Domain-aware cookie configuration
+  // - profile.resu-me.ai → shares identity with *.resu-me.ai ecosystem
+  // - ralphhhbenedict.com → isolated identity (personal site / prototype)
+  const hostname = window.location.hostname
+  const isResuMeDomain = hostname.endsWith('.resu-me.ai') || hostname.endsWith('.local.resu-me.ai')
+
+  const cookieDomain = isResuMeDomain
+    ? (import.meta.env.DEV ? '.local.resu-me.ai' : '.resu-me.ai')
+    : undefined  // Let browser set cookie on current domain only
+
+  const domainLabel = isResuMeDomain ? 'profile.resu-me.ai' : 'ralphhhbenedict.com'
+
   // Initialize Mixpanel
   mixpanel.init(MIXPANEL_TOKEN, {
     track_pageview: true,
     persistence: 'localStorage',
     debug: import.meta.env.DEV,
-    cookie_domain: '.resu-me.ai', // Cross-subdomain tracking
+    ...(cookieDomain && { cookie_domain: cookieDomain }),
+    cross_subdomain_cookie: isResuMeDomain, // Only cross-subdomain for resu-me.ai
   })
 
-  // Register super properties
+  // Register super properties (domain-aware)
   mixpanel.register({
-    domain: 'portfolio',
+    domain: domainLabel,
+    is_prototype: !isResuMeDomain,  // ralphhhbenedict.com = prototype
+    is_production_profile: isResuMeDomain,  // profile.resu-me.ai = production
     app_version: '1.0.0',
     platform: 'web',
   })
 
-  // Initialize PostHog
+  // Initialize PostHog (domain-aware)
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
     capture_pageview: true,
     capture_pageleave: true,
-    cross_subdomain_cookie: true,
+    cross_subdomain_cookie: isResuMeDomain, // Only cross-subdomain for resu-me.ai
     session_recording: {
       maskAllInputs: false,
       maskInputOptions: { password: true },
@@ -46,7 +61,7 @@ export const initMixpanel = () => {
   })
 
   initialized = true
-  console.log('[Analytics] Initialized (Mixpanel + PostHog)', import.meta.env.DEV ? '(debug mode)' : '')
+  console.log(`[Analytics] Initialized on ${domainLabel}`, isResuMeDomain ? '(ecosystem mode)' : '(prototype mode)', import.meta.env.DEV ? '(debug)' : '')
 }
 
 // Dual-fire track function

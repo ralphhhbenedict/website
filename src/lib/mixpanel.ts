@@ -28,7 +28,8 @@ export const initMixpanel = () => {
     ? (import.meta.env.DEV ? '.local.resu-me.ai' : '.resu-me.ai')
     : undefined  // Let browser set cookie on current domain only
 
-  const domainLabel = isResuMeDomain ? 'profile.resu-me.ai' : 'ralphhhbenedict.com'
+  // Use short code 'profile' for both resu-me.ai and prototype (ralphhhbenedict.com)
+  const domainLabel = 'profile'
 
   // Initialize Mixpanel
   mixpanel.init(MIXPANEL_TOKEN, {

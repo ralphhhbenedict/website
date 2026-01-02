@@ -182,6 +182,7 @@ export const PortfolioPreviewModal = ({
           className="absolute inset-0 w-full h-full"
           allowFullScreen
           style={{ ...baseStyle, pointerEvents: "auto", touchAction: "pan-y" }}
+          title={`PDF document: ${portfolioItem.label}`}
         />
       );
     }
@@ -201,6 +202,7 @@ export const PortfolioPreviewModal = ({
               width: `calc(100% + ${miroCrop.extraWidth}px)`,
               height: `calc(100% + ${miroCrop.extraHeight}px)`,
             }}
+            title={`Miro board: ${portfolioItem.label}`}
           />
         </div>
       );
@@ -213,6 +215,7 @@ export const PortfolioPreviewModal = ({
         className="absolute inset-0 w-full h-full"
         allowFullScreen
         style={{ ...baseStyle, pointerEvents: "none" }}
+        title={`Figma design: ${portfolioItem.label}`}
       />
     );
   };

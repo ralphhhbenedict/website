@@ -481,6 +481,7 @@ export const SevenHats = () => {
                     className="absolute inset-0 w-full h-full border-0"
                     allowFullScreen
                     style={{ pointerEvents: "auto", touchAction: "pan-y" }}
+                    title={`PDF document: ${selectedPortfolioItem.label}`}
                   />
                 ) : selectedPortfolioItem?.type === "miro" ? (
                   /* Miro: Crop bottom and right to hide all controls */
@@ -496,6 +497,7 @@ export const SevenHats = () => {
                         width: "calc(100% + 70px)", // Extra width to push right controls out of view
                         height: "calc(100% + 80px)", // Extra height to push bottom toolbar out of view
                       }}
+                      title={`Miro board: ${selectedPortfolioItem.label}`}
                     />
                   </div>
                 ) : (
@@ -505,6 +507,7 @@ export const SevenHats = () => {
                     className="absolute inset-0 w-full h-full border-0"
                     allowFullScreen
                     style={{ pointerEvents: "none" }}
+                    title={`Figma design: ${selectedPortfolioItem?.label}`}
                   />
                 )}
               </div>

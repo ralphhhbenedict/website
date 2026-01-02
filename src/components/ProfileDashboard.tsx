@@ -65,7 +65,7 @@ const ProfileDashboard = () => {
     setShareOpen(true);
   };
 
-  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+  return <main id="main-content" className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
     {/* Header */}
     <div className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
       <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
@@ -80,8 +80,12 @@ const ProfileDashboard = () => {
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Ralph Benedict Bautista</h1>
               <div className="mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 rounded-full text-xs font-medium">
-                  <span className="relative flex h-2 w-2">
+                <span
+                  role="status"
+                  aria-label="Availability: Accepting 1 more client"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 rounded-full text-xs font-medium"
+                >
+                  <span className="relative flex h-2 w-2" aria-hidden="true">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                   </span>
@@ -128,7 +132,7 @@ const ProfileDashboard = () => {
                   onClick={scrollToWork}
                   className="group"
                 >
-                  <Briefcase className="w-4 h-4 mr-2" />
+                  <Briefcase className="w-4 h-4 mr-2" aria-hidden="true" />
                   See My Work
                 </Button>
                 <Button
@@ -137,7 +141,7 @@ const ProfileDashboard = () => {
                   onClick={scrollToContact}
                   className="group hover:bg-primary hover:text-primary-foreground transition-all"
                 >
-                  <Mail className="w-4 h-4 mr-2" />
+                  <Mail className="w-4 h-4 mr-2" aria-hidden="true" />
                   Get in Touch
                 </Button>
               </div>
@@ -150,9 +154,9 @@ const ProfileDashboard = () => {
                   className="w-full justify-center group hover:bg-primary hover:text-primary-foreground transition-all duration-300"
                   onClick={handleShareProfile}
                 >
-                  <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                  <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" aria-hidden="true" />
                   Share Profile
-                  <Sparkles className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <Sparkles className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
                 </Button>
               </div>
             </div>
@@ -165,9 +169,9 @@ const ProfileDashboard = () => {
               className="group hover:bg-primary hover:text-primary-foreground transition-all duration-300"
               onClick={handleShareProfile}
             >
-              <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+              <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" aria-hidden="true" />
               Share Profile
-              <Sparkles className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Sparkles className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
             </Button>
           </div>
         </div>
@@ -255,6 +259,6 @@ const ProfileDashboard = () => {
     {/* Optimization components */}
     <ExitIntentPopup delay={5000} />
     <StickyFooterCTA showAfterScroll={30} onCtaClick={scrollToContact} />
-  </div>;
+  </main>;
 };
 export default ProfileDashboard;

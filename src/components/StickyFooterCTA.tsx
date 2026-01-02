@@ -77,10 +77,10 @@ export const StickyFooterCTA = ({
               </Button>
               <button
                 onClick={handleDismiss}
-                className="p-1.5 rounded-md hover:bg-primary-foreground/10 transition-colors"
-                aria-label="Dismiss"
+                className="p-1.5 rounded-md hover:bg-primary-foreground/10 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 focus:ring-offset-primary"
+                aria-label="Dismiss notification"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>

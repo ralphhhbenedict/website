@@ -99,7 +99,7 @@ const Waitlist = () => {
             {services.map((service) => (
               <Card key={service.label} className="bg-slate-800/50 border-slate-700/50">
                 <CardContent className="p-4 flex items-start gap-3">
-                  <service.icon className="w-5 h-5 text-primary mt-0.5" />
+                  <service.icon className="w-5 h-5 text-primary mt-0.5" aria-hidden="true" />
                   <div className="text-left">
                     <div className="font-semibold text-white">{service.label}</div>
                     <div className="text-sm text-slate-400">{service.desc}</div>
@@ -134,7 +134,7 @@ const Waitlist = () => {
                 />
                 <Button type="submit" disabled={loading} className="shrink-0">
                   {loading ? "..." : "Get in Touch"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" aria-hidden="true" />
                 </Button>
               </div>
               <div className="flex items-center gap-3 mt-6">
@@ -161,7 +161,7 @@ const Waitlist = () => {
                   }}
                   className="w-full border-primary/50 text-primary hover:bg-primary/10 h-12 text-base"
                 >
-                  <Video className="w-5 h-5 mr-2" />
+                  <Video className="w-5 h-5 mr-2" aria-hidden="true" />
                   Walk me through it
                 </Button>
               </div>
@@ -178,8 +178,8 @@ const Waitlist = () => {
               </p>
             </form>
           ) : (
-            <div className="flex items-center justify-center gap-2 text-primary">
-              <CheckCircle className="w-5 h-5" />
+            <div className="flex items-center justify-center gap-2 text-primary" role="status">
+              <CheckCircle className="w-5 h-5" aria-hidden="true" />
               <span className="text-lg">You're on the list. I'll be in touch.</span>
             </div>
           )}

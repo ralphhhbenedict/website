@@ -1,0 +1,26 @@
+name: Sync to public-profiles
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to public-profiles
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.PUBLIC_PROFILES_DEPLOY_KEY }}
+        with:
+          source-directory: '.'
+          destination-github-username: 'resu-me-ai'
+          destination-repository-name: 'public-profiles'
+          target-branch: main
+          commit-message: 'sync: ${{ github.event.head_commit.message }}'

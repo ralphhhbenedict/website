@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,8 +11,14 @@ import { HowIWork } from "./HowIWork";
 import Waitlist from "./Waitlist";
 import { ExitIntentPopup } from "./ExitIntentPopup";
 import { StickyFooterCTA } from "./StickyFooterCTA";
-import { trackTabChanged, trackShareClicked, trackCTAClick } from "@/lib/mixpanel";
+import { trackTabChanged, trackShareClicked, trackCTAClick, trackProfileViewed, trackProfileLinkClicked, trackTabScrollDepth } from "@/lib/mixpanel";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import { useSectionVisibility, useTabScrollDepth } from "@/hooks/useSectionTracking";
+import { useLinkTracking } from "@/hooks/useLinkTracking";
+
+// Profile configuration (will be dynamic in multi-tenant version)
+const PROFILE_USERNAME = '@ralphbautista';
+const PROFILE_USER_ID = 'user_ralph_prototype';
 
 const ProfileDashboard = () => {
   const profileImage = "/images/profile.png";
@@ -20,23 +26,42 @@ const ProfileDashboard = () => {
   const [currentTab, setCurrentTab] = React.useState<string>("case-studies");
   const tabsRef = useRef<HTMLDivElement>(null);
   const waitlistRef = useRef<HTMLDivElement>(null);
+  const pageViewFired = useRef(false);
 
   // V1.2 Portfolio Analytics - Profile Page Tracking
   const {
-    trackPageViewed,
     trackCtaClicked: trackPortfolioCta,
-    createSectionRef,
+    createSectionRef: createPortfolioSectionRef,
   } = usePortfolioAnalytics();
 
-  // Track page view on mount
-  useEffect(() => {
-    trackPageViewed();
-  }, [trackPageViewed]);
+  // RES-556: Section visibility tracking
+  const { createSectionRef } = useSectionVisibility(PROFILE_USERNAME);
 
-  // Section refs for viewport tracking
-  const caseStudiesRef = createSectionRef('case-studies');
-  const sevenHatsRef = createSectionRef('seven-hats');
-  const howIWorkRef = createSectionRef('how-i-work');
+  // RES-557: External link tracking
+  const { trackLinkClick } = useLinkTracking(PROFILE_USERNAME);
+
+  // RES-558: Tab scroll depth tracking
+  const { createScrollRef } = useTabScrollDepth(currentTab as 'case-studies' | 'seven-hats' | 'how-i-work');
+
+  // RES-559: Track profile_viewed on mount (fires once, replaces duplicate page_viewed)
+  useEffect(() => {
+    if (!pageViewFired.current) {
+      pageViewFired.current = true;
+      trackProfileViewed(PROFILE_USERNAME, PROFILE_USER_ID);
+    }
+  }, []);
+
+  // Section refs for viewport tracking (5 sections per spec)
+  const headerRef = createSectionRef('header');
+  const servicesRef = createSectionRef('services');
+  const waitlistSectionRef = createSectionRef('waitlist');
+  const loomCtaRef = createSectionRef('loom_cta');
+  const tabsSectionRef = createSectionRef('tabs');
+
+  // Legacy portfolio section refs (for existing tracking)
+  const caseStudiesRef = createPortfolioSectionRef('case-studies');
+  const sevenHatsRef = createPortfolioSectionRef('seven-hats');
+  const howIWorkRef = createPortfolioSectionRef('how-i-work');
 
   const scrollToWork = () => {
     trackCTAClick("see_my_work", "See My Work", "header");
@@ -66,8 +91,8 @@ const ProfileDashboard = () => {
   };
 
   return <main id="main-content" className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-    {/* Header */}
-    <div className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+    {/* Header - RES-556: Section visibility tracking */}
+    <div ref={headerRef} className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
       <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-0">
           <div className="flex items-start gap-4 md:gap-6">
@@ -99,10 +124,12 @@ const ProfileDashboard = () => {
               <div className="text-sm font-semibold text-foreground/80">
                 NYC | LA | SF | MNL
               </div>
+              {/* RES-557: External link click tracking */}
               <div className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mt-2">
                 <a
                   href="mailto:ralphhhbenedict@gmail.com"
                   className="text-primary underline underline-offset-2 hover:opacity-90 font-medium"
+                  onClick={() => trackLinkClick('mailto:ralphhhbenedict@gmail.com', 'header', 'email')}
                 >
                   Email
                 </a>
@@ -112,6 +139,7 @@ const ProfileDashboard = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline underline-offset-2 hover:opacity-90 font-medium"
+                  onClick={() => trackLinkClick('https://www.linkedin.com/in/ralphbenedict', 'header', 'linkedin')}
                 >
                   LinkedIn
                 </a>
@@ -121,6 +149,7 @@ const ProfileDashboard = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline underline-offset-2 hover:opacity-90 font-medium"
+                  onClick={() => trackLinkClick('https://www.instagram.com/ralphhhbenedict/', 'header', 'instagram')}
                 >
                   Instagram
                 </a>
@@ -178,12 +207,13 @@ const ProfileDashboard = () => {
       </div>
     </div>
 
-    {/* Waitlist CTA Section */}
-    <div ref={waitlistRef}>
+    {/* Waitlist CTA Section - RES-556: Section visibility tracking */}
+    <div ref={(el) => { waitlistRef.current = el; if (el) waitlistSectionRef(el); }}>
       <Waitlist />
     </div>
 
-    <div ref={tabsRef} className="container mx-auto px-4 md:px-6 py-8">
+    {/* Tabs Section - RES-556: Section visibility tracking */}
+    <div ref={(el) => { tabsRef.current = el; if (el) tabsSectionRef(el); }} className="container mx-auto px-4 md:px-6 py-8">
       <Tabs
           defaultValue="case-studies"
           className="space-y-8"

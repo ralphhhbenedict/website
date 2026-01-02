@@ -223,3 +223,105 @@ export const trackLoomError = (errorType: string, errorMessage: string) => {
 export const trackTosAccepted = (source: string) => {
   track('tos_accepted', { source })
 }
+
+// ============================================
+// RES-556: Profile Section Viewed (IntersectionObserver)
+// ============================================
+
+type SectionName = 'header' | 'services' | 'waitlist' | 'loom_cta' | 'tabs'
+
+const SECTION_INDEX_MAP: Record<SectionName, number> = {
+  header: 0,
+  services: 1,
+  waitlist: 2,
+  loom_cta: 3,
+  tabs: 4,
+}
+
+export const trackProfileSectionViewed = (
+  profileUsername: string,
+  sectionName: SectionName,
+  timeOnSectionMs?: number
+) => {
+  track('profile_section_viewed', {
+    profile_username: profileUsername,
+    section_name: sectionName,
+    section_index: SECTION_INDEX_MAP[sectionName],
+    ...(timeOnSectionMs !== undefined && { time_on_section_ms: timeOnSectionMs }),
+  })
+}
+
+// ============================================
+// RES-557: Profile Link Clicked (External Links)
+// ============================================
+
+type LinkType = 'email' | 'linkedin' | 'instagram' | 'twitter' | 'github'
+type LinkPosition = 'header' | 'waitlist' | 'footer' | 'case_study'
+
+export const trackProfileLinkClicked = (
+  profileUsername: string,
+  linkType: LinkType,
+  linkUrl: string,
+  linkPosition: LinkPosition
+) => {
+  track('profile_link_clicked', {
+    profile_username: profileUsername,
+    link_type: linkType,
+    link_url: linkUrl,
+    link_position: linkPosition,
+  })
+}
+
+// ============================================
+// RES-558: Tab Content Scroll Depth
+// ============================================
+
+type TabName = 'case-studies' | 'seven-hats' | 'how-i-work'
+type ScrollDepthThreshold = 25 | 50 | 75 | 100
+
+export const trackTabScrollDepth = (
+  tabName: TabName,
+  scrollDepthPercent: ScrollDepthThreshold,
+  timeToDepthMs?: number
+) => {
+  track('tab_scroll_depth', {
+    tab_name: tabName,
+    scroll_depth_percent: scrollDepthPercent,
+    ...(timeToDepthMs !== undefined && { time_to_depth_ms: timeToDepthMs }),
+  })
+}
+
+// ============================================
+// RES-559: Profile Viewed (replaces generic page_viewed)
+// ============================================
+
+interface ProfileViewedOptions {
+  viewerReferrer?: string
+  viewerUtmSource?: string
+  isCustomDomain?: boolean
+  customDomain?: string
+}
+
+export const trackProfileViewed = (
+  profileUsername: string,
+  profileUserId: string,
+  options: ProfileViewedOptions = {}
+) => {
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
+  const isCustomDomain = !hostname.endsWith('.resu-me.ai') && hostname !== 'localhost'
+
+  track('profile_viewed', {
+    profile_username: profileUsername,
+    profile_user_id: profileUserId,
+    viewer_referrer: options.viewerReferrer || (typeof document !== 'undefined' ? document.referrer : ''),
+    viewer_utm_source: options.viewerUtmSource || getUtmSource(),
+    is_custom_domain: options.isCustomDomain ?? isCustomDomain,
+    custom_domain: options.customDomain ?? (isCustomDomain ? hostname : null),
+  })
+}
+
+function getUtmSource(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  const params = new URLSearchParams(window.location.search)
+  return params.get('utm_source') || undefined
+}

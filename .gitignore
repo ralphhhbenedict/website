@@ -28,3 +28,7 @@ storybook-static
 .vercel
 .env*.local
 .env
+
+# Playwright
+playwright-report/
+test-results/

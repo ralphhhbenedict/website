@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ArrowRight, Zap, Target, Users, Brain, Video } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
-import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError, trackEmailCaptured, trackCTAClick } from "@/lib/mixpanel";
+import { trackFormStarted, trackFormSubmitted, trackFormSuccess, trackFormError, trackEmailCaptured, trackCTAClick, trackProfileLinkClicked } from "@/lib/mixpanel";
 import { LeaveALoom } from "./LeaveALoom";
 
 const Waitlist = () => {
@@ -165,6 +165,7 @@ const Waitlist = () => {
                   Walk me through it
                 </Button>
               </div>
+              {/* RES-557: External link click tracking */}
               <p className="text-sm text-slate-500 mt-3">
                 Or DM me on{" "}
                 <a
@@ -172,6 +173,7 @@ const Waitlist = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
+                  onClick={() => trackProfileLinkClicked('@ralphbautista', 'linkedin', 'https://www.linkedin.com/in/ralphbenedict', 'waitlist')}
                 >
                   LinkedIn
                 </a>

@@ -4,11 +4,34 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProfileDashboard from './ProfileDashboard';
 
-// Mock mixpanel
+// Mock mixpanel - include all tracking functions used by ProfileDashboard
 vi.mock('@/lib/mixpanel', () => ({
   trackTabChanged: vi.fn(),
   trackShareClicked: vi.fn(),
   trackCTAClick: vi.fn(),
+  trackProfileViewed: vi.fn(),
+  trackProfileLinkClicked: vi.fn(),
+  trackTabScrollDepth: vi.fn(),
+  trackProfileSectionViewed: vi.fn(),
+}));
+
+// Mock the custom hooks
+vi.mock('@/hooks/useSectionTracking', () => ({
+  useSectionVisibility: () => ({
+    createSectionRef: () => () => {},
+  }),
+  useTabScrollDepth: () => ({
+    createScrollRef: () => () => {},
+    handleScroll: () => {},
+  }),
+}));
+
+vi.mock('@/hooks/useLinkTracking', () => ({
+  useLinkTracking: () => ({
+    trackLinkClick: vi.fn(),
+    createLinkProps: vi.fn(),
+    withLinkTracking: vi.fn(),
+  }),
 }));
 
 const queryClient = new QueryClient({
